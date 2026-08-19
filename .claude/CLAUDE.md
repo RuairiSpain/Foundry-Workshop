@@ -22,6 +22,12 @@ teaching Microsoft Foundry through the Cascadia Outfitters case study. See
   and `requirements.txt`.
 - Solution code ships 100% line and branch coverage. Mock Azure and Foundry
   SDK calls so tests run offline.
+- Every lab's `solution/` and `tests/` packages are both named the same
+  ("solution", "tests") on purpose, so each lab stays self-contained and
+  its README's `cd labs/lab-NN-slug && pytest tests/` works standalone.
+  This means labs can't be tested in one combined `pytest labs/` run —
+  it collides on those package names. Use `./run_all_tests.sh` to run
+  every lab's suite one at a time instead.
 - Infrastructure-heavy labs (Durable Functions checkpoints, log/trace
   triage, private networking) additionally document smoke assertions in
   their README — state checks that prove the lab worked, since coverage

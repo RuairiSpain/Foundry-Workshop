@@ -1,0 +1,6 @@
+azure-functions==1.25.0
+requests==2.32.5
+azure-ai-projects==1.0.0b12
+azure-identity==1.25.1
+pytest==9.1.1
+pytest-cov==7.0.0

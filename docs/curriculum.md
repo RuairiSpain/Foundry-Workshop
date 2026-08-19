@@ -20,10 +20,52 @@ planner customer), Sam (platform and security lead).
 
 ## Locked decisions
 
-- Azure subscriptions are provisioned one per attendee.
+- Provisioning is hub-and-spoke. See "Provisioning model" below.
 - Lab 22's group-chat orchestration pattern is Magentic.
 - Labs 23, 31, and 32 are optional and license-gated.
 - Language is Python throughout.
+- No separate-gateway bonus lab. Every attendee uses the one shared AI
+  Gateway from Lab 30, through their own key.
+
+## Provisioning model
+
+The instructor owns a hub. Each attendee owns a spoke. Nothing here
+requires per-attendee subscriptions or a shared subscription — pick
+either, since isolation now happens at the resource level, not the
+subscription level.
+
+**Foundry.** The instructor creates one Foundry resource (the hub) and
+deploys the shared router model into it. Each attendee creates their own
+project under that hub — Lab 01's `+ Create Project` targets the hub's
+existing resource group instead of creating a new one. Each attendee also
+deploys their own low-cost model into their own project in Lab 03, so
+they keep a hands-on deployment rep. The router stays hub-owned because
+it's the more expensive, quota-sensitive resource.
+
+RBAC: the instructor grants each attendee **Azure AI Developer**, scoped
+to the hub resource group. This is enough to create a project and use the
+hub's shared models. It doesn't grant hub-owner rights or visibility into
+other attendees' projects.
+
+**Cosmos DB (Lab 20).** The instructor creates one Cosmos DB account and
+one database. Each attendee gets their own container, named
+`mem-<attendee-id>`, with the **Cosmos DB Built-in Data Contributor**
+role scoped to that container specifically — not the database or
+account. One attendee's code cannot reach another's container.
+
+**AI Gateway (Lab 30).** The instructor deploys one Azure API Management
+instance in front of the hub. Each attendee gets their own product and
+subscription key inside that one instance, with their own rate-limit and
+token-quota policy. Attendees don't each deploy a gateway.
+
+**Quota is still shared.** Hub-and-spoke isolates state and access, not
+model quota — the router and the gateway are both single shared
+resources underneath. Lab 05 and Lab 30 set project-scoped token limits
+so one attendee can't starve the rest of the room.
+
+`infra/` holds the scripts that stand this up: one hub deploy, one Cosmos
+deploy, one gateway deploy, and an attendee-provisioning loop that grants
+RBAC and creates a project per attendee. See `infra/README.md`.
 
 ## Format
 
@@ -34,16 +76,16 @@ folder contents.
 
 | Lab | Title | Prereqs | Concepts introduced | Surface | Optional |
 |----|-------|---------|----------------------|---------|----------|
-| 01 | Meet the Toolkit | — | Install Foundry Toolkit extension; Azure sign-in; Create Project wizard; My Resources view | Toolkit | |
-| 02 | Provision by code | 01 | `az login`; `az cognitiveservices account create --kind AIServices --allow-project-management`; `az cognitiveservices account project create`; notebook as a CLI driver | CLI, Notebook | Alt track |
+| 01 | Meet the Toolkit | — | Install Foundry Toolkit extension; Azure sign-in; Create Project wizard, targeting the instructor's existing hub resource group; My Resources view | Toolkit | |
+| 02 | Provision by code | 01 | `az login`; `az cognitiveservices account project create` against the instructor's existing hub account (no `account create` — the hub already exists); notebook as a CLI driver | CLI, Notebook | Alt track |
 
 ## Module 1 — Models, routing, and tuning
 
 | Lab | Title | Prereqs | Concepts introduced | Surface | Optional |
 |----|-------|---------|----------------------|---------|----------|
-| 03 | Deploy a low-cost model | 01 | Model catalog; model deployment; Model Playground side-by-side compare; View Code | Toolkit | |
-| 04 | Model router | 03 | Model router deployment; per-turn dynamic routing; reading routing decisions in trace | Toolkit, Portal | |
-| 05 | Tuning model connections | 03 | SDK client against a deployed model; temperature, top_p, max_tokens, seed; prompt caching | Toolkit, SDK | |
+| 03 | Deploy a low-cost model | 01 | Model catalog; deploying a model into the attendee's own project; Model Playground compare (own model vs. the hub's shared router); View Code | Toolkit | |
+| 04 | Model router | 03 | Connecting to the hub's shared model router deployment; per-turn dynamic routing; reading routing decisions in trace | Toolkit, Portal | |
+| 05 | Tuning model connections | 03, 04 | SDK client against both the attendee's own deployment and the hub's shared router; temperature, top_p, max_tokens, seed; prompt caching; project-scoped token limits | Toolkit, SDK | |
 
 ## Module 2 — Grounding the assistant
 
@@ -78,7 +120,7 @@ folder contents.
 | 17 | Vision-enabled agent | 09 | Multimodal prompt; image upload handling; vision model | Toolkit | |
 | 18 | Content Understanding | 17 | Content Understanding service; structured extraction from receipts and specs; feeding extraction into a knowledge base | Portal, Toolkit | |
 | 19 | Long-term memory | 09 | Foundry native long-term agent memory (preview); memory vs. thread state | Toolkit | |
-| 20 | Cosmos DB-backed memory | 19 | Agent Memory Toolkit; Cosmos DB as memory store; vector, full-text, and hybrid search over memory | SDK, Portal | |
+| 20 | Cosmos DB-backed memory | 19 | Agent Memory Toolkit; the shared Cosmos DB account with a per-attendee container; vector, full-text, and hybrid search over memory | SDK, Portal | |
 
 ## Module 6 — Multi-agent systems with MAF
 
@@ -98,7 +140,7 @@ folder contents.
 | 27 | Evaluation gates in CI/CD | 15, 26 | Batch evaluation as a pipeline step; blocking publish on regression | SDK, Portal | |
 | 28 | Finding expensive, slow, and failing agents | 15 | Fleet-wide log search; OpenTelemetry trace analysis in Azure Monitor; metric-to-trace correlation | Portal | |
 | 29 | Responsible AI, policy, and guardrails | 08 | Responsible AI Toolkit; Content Safety filters; AI Red Teaming Agent; project-wide policy | Portal | |
-| 30 | Private networking and the AI Gateway | 04 | Foundry control-plane token/TPM limits; Azure API Management as AI Gateway; managed-identity auth; semantic caching; private endpoints | Portal, APIM | |
+| 30 | Private networking and the AI Gateway | 04 | Foundry control-plane token/TPM limits; the one shared Azure API Management gateway in front of the hub; a per-attendee product and subscription key; managed-identity auth; semantic caching; private endpoints | Portal, APIM | |
 | 31 | A Teams agent | 09 | M365 Agents Toolkit; publish-to-Teams; channel authentication | M365 Agents Toolkit | Requires M365 tenant admin |
 | 32 | Registering in Agent 365 | 26 | Agent 365 control plane; org-wide observe, secure, govern | Portal | Requires Agent 365 licensing |
 | 33 | Capstone: the governed multi-agent ecosystem | All prior labs; 23, 31, 32 optional | Composing every prior lab into one operated system | Toolkit, Portal, SDK | |
