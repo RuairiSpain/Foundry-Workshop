@@ -1,0 +1,4 @@
+microsoft-agents-hosting-core==1.4.0
+microsoft-agents-activity==1.4.0
+pytest==9.1.1
+pytest-cov==7.0.0

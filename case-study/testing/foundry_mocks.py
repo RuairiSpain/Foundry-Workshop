@@ -419,6 +419,53 @@ class FakeAgentsClient:
 
 
 # ---------------------------------------------------------------------------
+# Fine-tuning (Appendix A) — Foundry's fine-tuning API was still in
+# preview as of writing this workshop, so this fake models the shape
+# every fine-tuning API in this family shares (submit a job against a
+# training file, poll until it succeeds or fails, get back a deployable
+# model name) rather than one verified against a stable public SDK.
+# ---------------------------------------------------------------------------
+
+
+@dataclasses.dataclass
+class FakeFineTuningJob:
+    id: str
+    base_model: str
+    training_file_id: str
+    suffix: str
+    status: str = "queued"
+    fine_tuned_model: str | None = None
+
+
+class FakeFineTuningClient:
+    def __init__(self) -> None:
+        self._jobs: dict[str, FakeFineTuningJob] = {}
+        self._status_script: dict[str, list[str]] = {}
+        self._counter = itertools.count(1)
+
+    def script_status_sequence(self, job_id: str, statuses: list[str]) -> None:
+        """Schedules the status a job reports on each successive `get()`
+        call, e.g. `["running", "running", "succeeded"]`."""
+        self._status_script[job_id] = list(statuses)
+
+    def create(self, *, base_model: str, training_file_id: str, suffix: str) -> FakeFineTuningJob:
+        job = FakeFineTuningJob(
+            id=f"ft-{next(self._counter):04d}", base_model=base_model, training_file_id=training_file_id, suffix=suffix
+        )
+        self._jobs[job.id] = job
+        return job
+
+    def get(self, job_id: str) -> FakeFineTuningJob:
+        job = self._jobs[job_id]
+        script = self._status_script.get(job_id)
+        if script:
+            job.status = script.pop(0)
+            if job.status == "succeeded":
+                job.fine_tuned_model = f"{job.base_model}-ft-{job.suffix}"
+        return job
+
+
+# ---------------------------------------------------------------------------
 # Top-level client (what solution code actually receives in tests)
 # ---------------------------------------------------------------------------
 
@@ -444,3 +491,4 @@ class FakeAIProjectClient:
         self.memory = FakeMemoryClient()
         self.agent_applications = FakeAgentApplicationsClient()
         self.content_safety = FakeContentSafetyClient()
+        self.fine_tuning = FakeFineTuningClient()
