@@ -2,6 +2,14 @@
 Cascadia's policy documents, then asks a question that only a
 multi-source knowledge base can answer in full — Lab 06's single-source
 file search can only ground half of it.
+
+Verified against `azure-ai-agents` 1.1.0 for file upload and vector
+stores: `AgentsClient.files.upload()` and
+`AgentsClient.vector_stores.create()`, nested under the agents client,
+not `AIProjectClient`. Foundry IQ knowledge bases have no stable typed
+SDK as of writing this workshop — a real call goes through
+`AIProjectClient.send_request()` against a preview REST surface; see
+`create_knowledge_base()`'s caller in main() for the caveat.
 """
 
 from __future__ import annotations
@@ -36,7 +44,7 @@ def _knowledge_base_tool_resources(knowledge_base_id: str) -> dict:
 
 def ask_knowledge_base(chat_client, question: str, *, deployment_name: str, knowledge_base_id: str) -> str:
     """Asks a question grounded in the Foundry IQ knowledge base."""
-    response = chat_client.complete(
+    response = chat_client.chat.completions.create(
         model=deployment_name,
         messages=[{"role": "user", "content": question}],
         tools=[{"type": "knowledge_base"}],
@@ -49,7 +57,7 @@ def ask_file_search(chat_client, question: str, *, deployment_name: str, vector_
     """Asks the same question through Lab 06's single-source file search,
     for comparison.
     """
-    response = chat_client.complete(
+    response = chat_client.chat.completions.create(
         model=deployment_name,
         messages=[{"role": "user", "content": question}],
         tools=[{"type": "file_search"}],
@@ -82,22 +90,29 @@ def compare_retrieval(
 def main() -> None:  # pragma: no cover - real SDK wiring and CLI entry point, exercised manually
     import os
 
+    from azure.ai.agents import AgentsClient
     from azure.ai.projects import AIProjectClient
     from azure.identity import DefaultAzureCredential
 
     endpoint = os.environ["FOUNDRY_PROJECT_ENDPOINT"]
-    client = AIProjectClient(endpoint=endpoint, credential=DefaultAzureCredential())
+    # Foundry IQ knowledge bases have no stable typed SDK as of writing
+    # this workshop — client.knowledge_bases below is this lab's own
+    # stand-in for AIProjectClient.send_request() against a preview
+    # REST surface, the same one foundry_mocks.py's
+    # FakeKnowledgeBasesClient models for tests.
+    client = AIProjectClient(endpoint=endpoint, credential=DefaultAzureCredential(), allow_preview=True)
+    agents_client = AgentsClient(endpoint=endpoint, credential=DefaultAzureCredential())
 
-    uploaded = upload_documents(client.files, CASE_STUDY_DOCS)
+    uploaded = upload_documents(agents_client.files, CASE_STUDY_DOCS)
     sources = build_sources(uploaded, CASE_STUDY_STRUCTURED)
     knowledge_base = create_knowledge_base(client.knowledge_bases, sources, name="cascadia-foundry-iq")
 
     # A vector store over the same two files, so the comparison is fair —
     # both sides ground on the policy docs; only Foundry IQ also has the
     # catalog.
-    vector_store = client.vector_stores.create(name="cascadia-policy-kb", file_ids=[f.id for f in uploaded])
+    vector_store = agents_client.vector_stores.create(name="cascadia-policy-kb", file_ids=[f.id for f in uploaded])
 
-    chat_client = client.inference.get_chat_completions_client()
+    chat_client = client.get_openai_client()
     deployment_name = os.environ.get("LOW_COST_DEPLOYMENT", "cascadia-low-cost")
     question = (
         "What's the price of the 2-person trail tent, and can I return it "

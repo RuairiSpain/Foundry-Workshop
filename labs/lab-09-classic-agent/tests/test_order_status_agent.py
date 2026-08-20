@@ -50,7 +50,7 @@ def test_execute_tool_raises_for_an_unregistered_tool_name():
 def test_ask_in_thread_returns_the_agents_reply():
     agents_client = FakeAgentsClient()
     agent = create_order_status_agent(agents_client, model="cascadia-low-cost")
-    thread = agents_client.create_thread()
+    thread = agents_client.threads.create()
     agents_client.script_tool_calls(agent.id, [("get_order_status", {"order_id": "CO-10231"})])
     agents_client.script_final_reply(agent.id, "Your order CO-10231 has shipped via SwiftShip.")
 
@@ -62,11 +62,11 @@ def test_ask_in_thread_returns_the_agents_reply():
 def test_ask_in_thread_calls_the_real_tool_implementation():
     agents_client = FakeAgentsClient()
     agent = create_order_status_agent(agents_client, model="cascadia-low-cost")
-    thread = agents_client.create_thread()
+    thread = agents_client.threads.create()
     agents_client.script_tool_calls(agent.id, [("get_order_status", {"order_id": "CO-10231"})])
     agents_client.script_final_reply(agent.id, "reply")
 
-    run = agents_client.create_and_process_run(thread_id=thread.id, agent_id=agent.id, tool_executor=execute_tool)
+    run = agents_client.runs.create_and_process(thread.id, agent_id=agent.id, tool_executor=execute_tool)
 
     tool_name, call_info = run.tool_calls_made[0]
     assert tool_name == "get_order_status"
@@ -76,7 +76,7 @@ def test_ask_in_thread_calls_the_real_tool_implementation():
 def test_two_turns_in_the_same_thread_both_answer_and_accumulate_history():
     agents_client = FakeAgentsClient()
     agent = create_order_status_agent(agents_client, model="cascadia-low-cost")
-    thread = agents_client.create_thread()
+    thread = agents_client.threads.create()
 
     agents_client.script_tool_calls(agent.id, [("get_order_status", {"order_id": "CO-10231"})])
     agents_client.script_final_reply(agent.id, "Order CO-10231 has shipped.")
@@ -88,4 +88,4 @@ def test_two_turns_in_the_same_thread_both_answer_and_accumulate_history():
 
     assert reply_1 == "Order CO-10231 has shipped."
     assert reply_2 == "Order CO-10245 is still processing."
-    assert len(agents_client.list_messages(thread_id=thread.id)) == 4  # 2 user + 2 assistant
+    assert len(agents_client.messages.list(thread.id)) == 4  # 2 user + 2 assistant

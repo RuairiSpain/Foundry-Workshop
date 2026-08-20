@@ -51,7 +51,7 @@ class DamageAssessment:
 def assess_damaged_item(chat_client, image_path: Path, *, deployment_name: str, question: str) -> DamageAssessment:
     """Sends one damaged-gear photo to a vision-capable deployment."""
     message = build_vision_message(image_path, question=question)
-    response = chat_client.complete(model=deployment_name, messages=[message])
+    response = chat_client.chat.completions.create(model=deployment_name, messages=[message])
     return DamageAssessment(image_path=image_path, assessment=response.choices[0].message.content)
 
 
@@ -63,7 +63,7 @@ def main() -> None:  # pragma: no cover - real SDK wiring and CLI entry point, e
 
     endpoint = os.environ["FOUNDRY_PROJECT_ENDPOINT"]
     client = AIProjectClient(endpoint=endpoint, credential=DefaultAzureCredential())
-    chat_client = client.inference.get_chat_completions_client()
+    chat_client = client.get_openai_client()
     deployment_name = os.environ.get("VISION_DEPLOYMENT", "cascadia-vision")
 
     assessment = assess_damaged_item(

@@ -1,11 +1,19 @@
 """Runs Content Safety checks, enforces a project-wide policy on the
 results, and probes an agent with adversarial prompts the way the AI
 Red Teaming Agent does.
+
+Verified against `azure-ai-contentsafety` 1.0.0's `ContentSafetyClient`.
+`analyze_text()` takes an `AnalyzeTextOptions` and returns a result
+whose `categories_analysis` is a list of {category, severity} entries —
+category names are "Hate", "SelfHarm", "Sexual", "Violence" — not a
+flat dict of every category at a fixed set of keys.
 """
 
 from __future__ import annotations
 
 import dataclasses
+
+from azure.ai.contentsafety.models import AnalyzeTextOptions
 
 DEFAULT_SEVERITY_THRESHOLD = 2  # 0-7 scale; 2 is Content Safety's default "low" band.
 
@@ -25,23 +33,30 @@ class PolicyViolationError(RuntimeError):
     """Raised when a Content Safety result violates the project policy."""
 
 
-def check_content_safety(content_safety_client, text: str) -> dict[str, int]:
-    """Runs a Content Safety analysis and returns per-category severities."""
-    # TODO(lab-29): call content_safety_client.analyze_text(text) and
-    # return the result.
+def check_content_safety(content_safety_client, text: str) -> list:
+    """Runs a Content Safety analysis and returns the per-category
+    severity results.
+
+    Build an `AnalyzeTextOptions(text=text)`, call
+    `content_safety_client.analyze_text()` with it, and return the
+    result's `.categories_analysis`.
+    """
+    # TODO(lab-29): call content_safety_client.analyze_text() and
+    # return the categories_analysis list.
     raise NotImplementedError("check_content_safety is not implemented yet")
 
 
 def enforce_policy(
-    severities: dict[str, int], *, blocked_categories: list[str] | None = None, threshold: int = DEFAULT_SEVERITY_THRESHOLD
+    categories_analysis: list, *, blocked_categories: list[str] | None = None, threshold: int = DEFAULT_SEVERITY_THRESHOLD
 ) -> None:
     """Raises PolicyViolationError if any blocked category's severity
     reaches the threshold.
     """
-    # TODO(lab-29): default categories_to_check to every key in
-    # severities when blocked_categories is None. Collect the
-    # categories in categories_to_check whose severity >= threshold.
-    # Raise PolicyViolationError naming them if any exist.
+    # TODO(lab-29): default categories_to_check to every entry.category
+    # in categories_analysis when blocked_categories is None. Collect
+    # the entries whose category is in categories_to_check and whose
+    # severity >= threshold. Raise PolicyViolationError naming them if
+    # any exist.
     raise NotImplementedError("enforce_policy is not implemented yet")
 
 
@@ -56,7 +71,7 @@ def run_red_team_probe(chat_client, probes: list[dict], *, deployment_name: str)
     """Sends each adversarial probe and checks whether the reply leaked
     a forbidden phrase.
     """
-    # TODO(lab-29): for each probe, call chat_client.complete() with its
+    # TODO(lab-29): for each probe, call chat_client.chat.completions.create() with its
     # prompt, then check whether any of its forbidden_phrases appear in
     # the reply (case-insensitively). Build a ProbeResult per probe.
     raise NotImplementedError("run_red_team_probe is not implemented yet")
@@ -76,7 +91,7 @@ def main() -> None:
 
     endpoint = os.environ["FOUNDRY_PROJECT_ENDPOINT"]
     client = AIProjectClient(endpoint=endpoint, credential=DefaultAzureCredential())
-    chat_client = client.inference.get_chat_completions_client()
+    chat_client = client.get_openai_client()
 
     results = run_red_team_probe(chat_client, RED_TEAM_PROBES, deployment_name=os.environ.get("LOW_COST_DEPLOYMENT", "cascadia-low-cost"))
     leaks = find_leaks(results)

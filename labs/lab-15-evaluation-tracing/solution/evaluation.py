@@ -61,7 +61,7 @@ def score_safety(reply: str, *, forbidden: list[str]) -> bool:
 
 
 def evaluate_one(chat_client, item: dict, *, deployment_name: str) -> EvalResult:
-    response = chat_client.complete(
+    response = chat_client.chat.completions.create(
         model=deployment_name,
         messages=[{"role": "user", "content": item["question"]}],
     )
@@ -120,7 +120,7 @@ def main() -> None:  # pragma: no cover - real SDK wiring and CLI entry point, e
 
     endpoint = os.environ["FOUNDRY_PROJECT_ENDPOINT"]
     client = AIProjectClient(endpoint=endpoint, credential=DefaultAzureCredential())
-    chat_client = client.inference.get_chat_completions_client()
+    chat_client = client.get_openai_client()
     deployment_name = os.environ.get("LOW_COST_DEPLOYMENT", "cascadia-low-cost")
 
     results = run_batch_evaluation(chat_client, EVAL_DATASET, deployment_name=deployment_name)

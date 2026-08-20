@@ -1,6 +1,12 @@
 """Wires Lab 15's batch evaluation into a release gate: a new agent
 version only gets traffic if it doesn't regress against the currently
 live version.
+
+Agent Applications have no stable typed SDK as of writing this
+workshop — a real call goes through `AIProjectClient.send_request()`
+against a preview REST surface. `agent_applications_client` below is
+this lab's own stand-in for that surface. See main() for the caveat
+spelled out inline.
 """
 
 from __future__ import annotations
@@ -25,7 +31,7 @@ def score_reply(reply: str, *, must_contain: list[str]) -> float:
 
 def evaluate_deployment(chat_client, *, deployment_name: str, dataset: list[dict] = EVAL_DATASET) -> float:
     """Runs the eval dataset against one deployment and returns the average score."""
-    # TODO(lab-27): call chat_client.complete() once per dataset item,
+    # TODO(lab-27): call chat_client.chat.completions.create() once per dataset item,
     # score each reply with score_reply(), and return the average.
     raise NotImplementedError("evaluate_deployment is not implemented yet")
 
@@ -83,11 +89,14 @@ def main() -> None:
     from azure.identity import DefaultAzureCredential
 
     endpoint = os.environ["FOUNDRY_PROJECT_ENDPOINT"]
-    client = AIProjectClient(endpoint=endpoint, credential=DefaultAzureCredential())
+    # client.agent_applications is this lab's own stand-in — Agent
+    # Applications have no stable typed SDK yet, so a real call goes
+    # through client.send_request() against a preview REST surface.
+    client = AIProjectClient(endpoint=endpoint, credential=DefaultAzureCredential(), allow_preview=True)
 
     version = publish_if_gate_passes(
         client.agent_applications,
-        client.inference.get_chat_completions_client(),
+        client.get_openai_client(),
         os.environ["AGENT_APPLICATION_ID"],
         agent_id=os.environ["CANDIDATE_AGENT_ID"],
         baseline_deployment=os.environ.get("LOW_COST_DEPLOYMENT", "cascadia-low-cost"),

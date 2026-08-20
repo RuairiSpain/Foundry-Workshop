@@ -35,7 +35,7 @@ def triage_questions() -> list[str]:
 
 
 def route_question(chat_client, question: str, *, router_deployment: str) -> RoutedReply:
-    response = chat_client.complete(
+    response = chat_client.chat.completions.create(
         model=router_deployment,
         messages=[{"role": "user", "content": question}],
     )
@@ -48,7 +48,7 @@ def route_question(chat_client, question: str, *, router_deployment: str) -> Rou
 
 def route_all(client, questions: list[str], *, router_deployment: str) -> list[RoutedReply]:
     """Routes every question and returns one RoutedReply per question, in order."""
-    chat_client = client.inference.get_chat_completions_client()
+    chat_client = client.get_openai_client()
     return [route_question(chat_client, question, router_deployment=router_deployment) for question in questions]
 
 

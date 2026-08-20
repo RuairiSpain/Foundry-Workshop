@@ -8,10 +8,12 @@ You'll fine-tune your low-cost deployment (Lab 03) on a handful of
 Cascadia-specific examples, then compare it against the shared router
 baseline on the same groundedness scoring Lab 15 introduced.
 
-**Verified against:** this workshop's own `FakeFineTuningClient`, not a
-stable public SDK — Foundry's fine-tuning API was still in preview as
-of writing this workshop. Read `case-study/testing/foundry_mocks.py`'s
-comment above that class before Step 3 for exactly what's unverified.
+**Verified against:** `openai` 2.54.0's `client.fine_tuning.jobs`, as of
+writing this workshop. Azure OpenAI exposes fine-tuning through the
+same OpenAI-compatible endpoint every earlier lab already uses for chat
+completions (`client.get_openai_client()`), not a Foundry-specific
+client. Whether fine-tuning is enabled for your project is a capability
+question for your instructor, not an SDK-shape one.
 
 ## Prerequisites
 

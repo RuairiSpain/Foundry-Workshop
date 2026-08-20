@@ -1,11 +1,19 @@
 """Runs Content Safety checks, enforces a project-wide policy on the
 results, and probes an agent with adversarial prompts the way the AI
 Red Teaming Agent does.
+
+Verified against `azure-ai-contentsafety` 1.0.0's `ContentSafetyClient`.
+`analyze_text()` takes an `AnalyzeTextOptions` and returns a result
+whose `categories_analysis` is a list of {category, severity} entries —
+category names are "Hate", "SelfHarm", "Sexual", "Violence" — not a
+flat dict of every category at a fixed set of keys.
 """
 
 from __future__ import annotations
 
 import dataclasses
+
+from azure.ai.contentsafety.models import AnalyzeTextOptions
 
 DEFAULT_SEVERITY_THRESHOLD = 2  # 0-7 scale; 2 is Content Safety's default "low" band.
 
@@ -25,13 +33,16 @@ class PolicyViolationError(RuntimeError):
     """Raised when a Content Safety result violates the project policy."""
 
 
-def check_content_safety(content_safety_client, text: str) -> dict[str, int]:
-    """Runs a Content Safety analysis and returns per-category severities."""
-    return content_safety_client.analyze_text(text)
+def check_content_safety(content_safety_client, text: str) -> list:
+    """Runs a Content Safety analysis and returns the per-category
+    severity results — a list of {category, severity} entries, not a
+    flat dict, since different services score different category sets.
+    """
+    return content_safety_client.analyze_text(AnalyzeTextOptions(text=text)).categories_analysis
 
 
 def enforce_policy(
-    severities: dict[str, int], *, blocked_categories: list[str] | None = None, threshold: int = DEFAULT_SEVERITY_THRESHOLD
+    categories_analysis: list, *, blocked_categories: list[str] | None = None, threshold: int = DEFAULT_SEVERITY_THRESHOLD
 ) -> None:
     """Raises PolicyViolationError if any blocked category's severity
     reaches the threshold.
@@ -41,11 +52,13 @@ def enforce_policy(
     written should still be enforced, not silently skipped because it
     wasn't named yet.
     """
-    categories_to_check = blocked_categories if blocked_categories is not None else list(severities)
+    categories_to_check = (
+        blocked_categories if blocked_categories is not None else [entry.category for entry in categories_analysis]
+    )
     violations = {
-        category: severity
-        for category, severity in severities.items()
-        if category in categories_to_check and severity >= threshold
+        entry.category: entry.severity
+        for entry in categories_analysis
+        if entry.category in categories_to_check and entry.severity >= threshold
     }
     if violations:
         raise PolicyViolationError(f"Content policy violation: {violations}")
@@ -65,7 +78,7 @@ def run_red_team_probe(chat_client, probes: list[dict], *, deployment_name: str)
     """
     results = []
     for probe in probes:
-        response = chat_client.complete(
+        response = chat_client.chat.completions.create(
             model=deployment_name, messages=[{"role": "user", "content": probe["prompt"]}]
         )
         reply = response.choices[0].message.content
@@ -87,7 +100,7 @@ def main() -> None:  # pragma: no cover - real SDK wiring and CLI entry point, e
 
     endpoint = os.environ["FOUNDRY_PROJECT_ENDPOINT"]
     client = AIProjectClient(endpoint=endpoint, credential=DefaultAzureCredential())
-    chat_client = client.inference.get_chat_completions_client()
+    chat_client = client.get_openai_client()
 
     results = run_red_team_probe(chat_client, RED_TEAM_PROBES, deployment_name=os.environ.get("LOW_COST_DEPLOYMENT", "cascadia-low-cost"))
     leaks = find_leaks(results)

@@ -35,7 +35,7 @@ class PromptScore:
 
 def score_system_prompt(chat_client, system_prompt: str, *, deployment_name: str, questions: list[dict]) -> PromptScore:
     """Scores one system prompt across every eval question."""
-    # TODO(lab-14): for each item in questions, call chat_client.complete()
+    # TODO(lab-14): for each item in questions, call chat_client.chat.completions.create()
     # with a system message (system_prompt) and a user message
     # (item["question"]), then call score_reply() on the response content.
     # Return a PromptScore with all the per-question scores.
@@ -69,7 +69,7 @@ def main() -> None:
     endpoint = os.environ["FOUNDRY_PROJECT_ENDPOINT"]
     optimized_prompt = os.environ["OPTIMIZED_SYSTEM_PROMPT"]
     client = AIProjectClient(endpoint=endpoint, credential=DefaultAzureCredential())
-    chat_client = client.inference.get_chat_completions_client()
+    chat_client = client.get_openai_client()
     deployment_name = os.environ.get("LOW_COST_DEPLOYMENT", "cascadia-low-cost")
 
     comparison = compare_prompts(

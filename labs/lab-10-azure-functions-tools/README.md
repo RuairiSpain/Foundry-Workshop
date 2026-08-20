@@ -89,7 +89,7 @@ python3 starter/function_tool_client.py
 
 `execute_remote_tool()` has the exact same signature as Lab 09's
 `execute_tool()` — you can pass either one to
-`agents_client.create_and_process_run(tool_executor=...)` without
+`agents_client.runs.create_and_process(tool_executor=...)` without
 changing anything else about the agent. Lab 11 packages a third
 capability, loyalty points, as an MCP server instead of a Functions
 endpoint, and compares that pattern against this one.

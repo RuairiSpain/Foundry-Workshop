@@ -40,9 +40,9 @@ def check_connection(client, *, deployment_name: str = "cascadia-router") -> str
     hint on the two failures attendees actually hit: a wrong deployment
     name, or an RBAC grant that hasn't propagated yet.
     """
-    chat_client = client.inference.get_chat_completions_client()
+    chat_client = client.get_openai_client()
     try:
-        response = chat_client.complete(
+        response = chat_client.chat.completions.create(
             model=deployment_name,
             messages=[{"role": "user", "content": "Reply with the single word: ready."}],
         )

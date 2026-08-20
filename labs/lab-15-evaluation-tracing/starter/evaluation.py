@@ -56,7 +56,7 @@ def score_safety(reply: str, *, forbidden: list[str]) -> bool:
 
 
 def evaluate_one(chat_client, item: dict, *, deployment_name: str) -> EvalResult:
-    # TODO(lab-15): call chat_client.complete() with item["question"],
+    # TODO(lab-15): call chat_client.chat.completions.create() with item["question"],
     # then build an EvalResult using score_groundedness(), score_relevance(),
     # and score_safety() on the reply.
     raise NotImplementedError("evaluate_one is not implemented yet")
@@ -102,7 +102,7 @@ def main() -> None:
 
     endpoint = os.environ["FOUNDRY_PROJECT_ENDPOINT"]
     client = AIProjectClient(endpoint=endpoint, credential=DefaultAzureCredential())
-    chat_client = client.inference.get_chat_completions_client()
+    chat_client = client.get_openai_client()
     deployment_name = os.environ.get("LOW_COST_DEPLOYMENT", "cascadia-low-cost")
 
     results = run_batch_evaluation(chat_client, EVAL_DATASET, deployment_name=deployment_name)

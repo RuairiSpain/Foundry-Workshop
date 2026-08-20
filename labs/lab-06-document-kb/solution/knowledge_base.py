@@ -1,6 +1,16 @@
 """Uploads Cascadia's policy documents, builds a vector store from them,
 and compares a grounded answer against an ungrounded one on the same
 question.
+
+Verified against `azure-ai-agents` 1.1.0: file upload and vector store
+creation are `AgentsClient.files.upload()` and
+`AgentsClient.vector_stores.create()` — nested under the agents client,
+not `AIProjectClient.files`/`.vector_stores`. `ask_grounded()`'s
+`tools=`/`tool_resources=` on a bare chat completion is a simplified
+illustration of the *concept*, not a literal endpoint: the real
+mechanism for attaching a vector store to an answer is the Agents API's
+`file_search` tool on an agent (Lab 09), which this lab — Module 2,
+before agents exist in the curriculum — can't introduce yet.
 """
 
 from __future__ import annotations
@@ -27,7 +37,7 @@ def _file_search_tool_resources(vector_store_id: str) -> dict:
 
 def ask_grounded(chat_client, question: str, *, deployment_name: str, vector_store_id: str) -> str:
     """Asks a question with the knowledge base attached as a tool resource."""
-    response = chat_client.complete(
+    response = chat_client.chat.completions.create(
         model=deployment_name,
         messages=[{"role": "user", "content": question}],
         tools=[{"type": "file_search"}],
@@ -38,7 +48,7 @@ def ask_grounded(chat_client, question: str, *, deployment_name: str, vector_sto
 
 def ask_ungrounded(chat_client, question: str, *, deployment_name: str) -> str:
     """Asks the same question with no knowledge base attached."""
-    response = chat_client.complete(
+    response = chat_client.chat.completions.create(
         model=deployment_name,
         messages=[{"role": "user", "content": question}],
     )
@@ -61,16 +71,18 @@ def compare_grounding(chat_client, question: str, *, deployment_name: str, vecto
 def main() -> None:  # pragma: no cover - real SDK wiring and CLI entry point, exercised manually
     import os
 
+    from azure.ai.agents import AgentsClient
     from azure.ai.projects import AIProjectClient
     from azure.identity import DefaultAzureCredential
 
     endpoint = os.environ["FOUNDRY_PROJECT_ENDPOINT"]
     client = AIProjectClient(endpoint=endpoint, credential=DefaultAzureCredential())
+    agents_client = AgentsClient(endpoint=endpoint, credential=DefaultAzureCredential())
 
-    uploaded = upload_documents(client.files, CASE_STUDY_DOCS)
-    vector_store = build_knowledge_base(client.vector_stores, uploaded, name="cascadia-policy-kb")
+    uploaded = upload_documents(agents_client.files, CASE_STUDY_DOCS)
+    vector_store = build_knowledge_base(agents_client.vector_stores, uploaded, name="cascadia-policy-kb")
 
-    chat_client = client.inference.get_chat_completions_client()
+    chat_client = client.get_openai_client()
     deployment_name = os.environ.get("LOW_COST_DEPLOYMENT", "cascadia-low-cost")
     question = "Can I return a carabiner I already took out of its packaging?"
 

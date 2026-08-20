@@ -1,6 +1,12 @@
 """Publishes an agent as a Foundry Agent Application, watches versions
 snapshot automatically, splits traffic between a stable and a canary
 version, and rolls back if the canary doesn't work out.
+
+Agent Applications have no stable typed SDK as of writing this
+workshop — a real call goes through `AIProjectClient.send_request()`
+against a preview REST surface. `agent_applications_client` below is
+this lab's own stand-in for that surface. See main() for the caveat
+spelled out inline.
 """
 
 from __future__ import annotations
@@ -41,7 +47,10 @@ def main() -> None:
 
     endpoint = os.environ["FOUNDRY_PROJECT_ENDPOINT"]
     agent_id = os.environ["PROMPT_AGENT_ID"]
-    client = AIProjectClient(endpoint=endpoint, credential=DefaultAzureCredential())
+    # client.agent_applications is this lab's own stand-in — Agent
+    # Applications have no stable typed SDK yet, so a real call goes
+    # through client.send_request() against a preview REST surface.
+    client = AIProjectClient(endpoint=endpoint, credential=DefaultAzureCredential(), allow_preview=True)
 
     app = publish_first_version(client.agent_applications, name="cascadia-support-app", agent_id=agent_id)
     print(f"Published {app.name} as {app.id}, version 1.")

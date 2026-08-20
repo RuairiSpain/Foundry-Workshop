@@ -1,6 +1,13 @@
 """Extracts structured fields from a receipt with Content Understanding,
 validates the extraction, and feeds it into Lab 07's knowledge base as a
 new source.
+
+Verified against `azure-ai-contentunderstanding` 1.2.0b3's schema-based
+field extraction. The real `ContentUnderstandingClient` is a
+long-running-operation API (`begin_analyze()`, returning a poller) —
+`content_understanding_client.analyze()` here simplifies that polling
+loop to one synchronous call. Foundry IQ knowledge bases have no stable
+typed SDK as of writing this workshop — see main() for that caveat.
 """
 
 from __future__ import annotations
@@ -77,7 +84,12 @@ def main() -> None:  # pragma: no cover - real SDK wiring and CLI entry point, e
     receipt_path = Path(__file__).resolve().parents[3] / "case-study" / "receipts-and-specs" / "receipt-CO-10231.txt"
     endpoint = os.environ["FOUNDRY_PROJECT_ENDPOINT"]
     knowledge_base_id = os.environ["FOUNDRY_IQ_KNOWLEDGE_BASE_ID"]
-    client = AIProjectClient(endpoint=endpoint, credential=DefaultAzureCredential())
+    # client.content_understanding and client.knowledge_bases are this
+    # lab's own stand-ins: the real Content Understanding call is a
+    # poller (see the module docstring), and knowledge bases have no
+    # stable typed SDK yet — a real call goes through
+    # AIProjectClient.send_request() against a preview REST surface.
+    client = AIProjectClient(endpoint=endpoint, credential=DefaultAzureCredential(), allow_preview=True)
 
     fields = extract_receipt_fields(client.content_understanding, receipt_path)
     add_receipt_to_knowledge_base(client.knowledge_bases, knowledge_base_id, fields)

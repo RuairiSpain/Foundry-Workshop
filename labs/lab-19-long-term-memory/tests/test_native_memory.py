@@ -33,13 +33,13 @@ def test_ask_with_memory_injects_remembered_facts_into_a_new_thread():
 
     assert reply == "Based on your size 8 preference, order the women's 8."
     thread_id = agents_client.last_thread_id
-    messages = agents_client.list_messages(thread_id=thread_id)
-    assert messages[0].role == "system"
+    messages = agents_client.messages.list(thread_id)
+    assert messages[0].role == "user"
     assert "size 8" in messages[0].content
-    assert messages[1].role == "user"
+    assert "What boot size?" in messages[0].content
 
 
-def test_ask_with_memory_skips_the_system_message_with_no_facts():
+def test_ask_with_memory_sends_the_bare_question_with_no_facts():
     agents_client = FakeAgentsClient()
     memory_client = FakeMemoryClient()
     agent = agents_client.create_agent(model="cascadia-low-cost", name="cascadia-support", instructions="help")
@@ -48,8 +48,9 @@ def test_ask_with_memory_skips_the_system_message_with_no_facts():
     ask_with_memory(agents_client, memory_client, agent.id, "nobody@example.com", "What boot size?")
 
     thread_id = agents_client.last_thread_id
-    messages = agents_client.list_messages(thread_id=thread_id)
+    messages = agents_client.messages.list(thread_id)
     assert messages[0].role == "user"
+    assert messages[0].content == "What boot size?"
 
 
 def test_a_fact_remembered_in_one_thread_reaches_a_second_unrelated_thread():

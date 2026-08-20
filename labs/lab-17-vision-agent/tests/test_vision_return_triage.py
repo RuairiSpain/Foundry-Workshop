@@ -13,7 +13,7 @@ from solution.vision_return_triage import (
     build_vision_message,
     encode_image_base64,
 )
-from testing.foundry_mocks import FakeChatCompletionsClient
+from testing.foundry_mocks import FakeOpenAIClient
 
 
 def test_encode_image_base64_round_trips_the_real_bytes():
@@ -47,7 +47,7 @@ def test_build_vision_message_has_a_text_part_and_an_image_part():
 
 
 def test_assess_damaged_item_returns_the_models_assessment():
-    chat_client = FakeChatCompletionsClient()
+    chat_client = FakeOpenAIClient()
     chat_client.queue_reply("A broken tent pole. Covered under the worn-gear guarantee.")
 
     assessment = assess_damaged_item(
@@ -59,7 +59,7 @@ def test_assess_damaged_item_returns_the_models_assessment():
 
 
 def test_assess_damaged_item_sends_the_multimodal_message():
-    chat_client = FakeChatCompletionsClient()
+    chat_client = FakeOpenAIClient()
     chat_client.queue_reply("assessment")
 
     assess_damaged_item(chat_client, SAMPLE_PHOTO, deployment_name="cascadia-vision", question="What's broken?")

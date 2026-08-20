@@ -5,7 +5,7 @@ point, exercised manually, not under test.
 """
 
 from solution.prompt_scoring import compare_prompts, score_reply, score_system_prompt
-from testing.foundry_mocks import FakeChatCompletionsClient
+from testing.foundry_mocks import FakeOpenAIClient
 
 
 def test_score_reply_with_no_required_phrases_is_a_perfect_score():
@@ -29,7 +29,7 @@ def test_score_reply_gives_partial_credit():
 
 
 def test_score_system_prompt_sends_a_system_and_user_message_per_question():
-    chat_client = FakeChatCompletionsClient()
+    chat_client = FakeOpenAIClient()
     chat_client.queue_reply("You have 60 days.")
 
     score_system_prompt(
@@ -47,7 +47,7 @@ def test_score_system_prompt_sends_a_system_and_user_message_per_question():
 
 
 def test_score_system_prompt_averages_across_questions():
-    chat_client = FakeChatCompletionsClient()
+    chat_client = FakeOpenAIClient()
     chat_client.queue_reply("You have 60 days.")
     chat_client.queue_reply("I don't know about carabiners.")
 
@@ -66,7 +66,7 @@ def test_score_system_prompt_averages_across_questions():
 
 
 def test_compare_prompts_reports_improvement():
-    chat_client = FakeChatCompletionsClient()
+    chat_client = FakeOpenAIClient()
     chat_client.queue_reply("I'm not sure.")  # weak prompt's reply
     chat_client.queue_reply("You have 60 days to return unused gear.")  # optimized prompt's reply
 
@@ -84,7 +84,7 @@ def test_compare_prompts_reports_improvement():
 
 
 def test_compare_prompts_reports_no_improvement_when_scores_tie():
-    chat_client = FakeChatCompletionsClient()
+    chat_client = FakeOpenAIClient()
     chat_client.queue_reply("You have 60 days.")
     chat_client.queue_reply("You have 60 days.")
 

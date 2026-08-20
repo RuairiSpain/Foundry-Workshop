@@ -1,2 +1,4 @@
+azure-ai-projects==2.3.0
+azure-identity==1.25.3
 pytest==9.1.1
-pytest-cov==7.0.0
+pytest-cov==7.1.0

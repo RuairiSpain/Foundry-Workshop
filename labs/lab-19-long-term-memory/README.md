@@ -38,9 +38,10 @@ Open `starter/native_memory.py`. Implement three functions:
 
 1. `remember_preference()` — call `memory_client.remember()`.
 2. `recall_preferences()` — call `memory_client.recall()` and return it.
-3. `ask_with_memory()` — create a thread, recall facts and inject them
-   as a system message if any exist, add the user's question, process a
-   run, and return the reply.
+3. `ask_with_memory()` — create a thread, recall facts and fold them
+   into the user's message if any exist (a thread message is only
+   `user` or `assistant` — there's no `system` role to carry them
+   separately), process a run, and return the reply.
 
 Run the tests to check your work:
 

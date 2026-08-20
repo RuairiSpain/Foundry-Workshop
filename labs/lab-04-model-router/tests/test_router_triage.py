@@ -18,7 +18,7 @@ def test_triage_questions_returns_at_least_one_easy_and_one_hard_question():
 
 def test_route_question_records_the_underlying_model_not_the_deployment_name():
     client = FakeAIProjectClient()
-    chat_client = client.inference.get_chat_completions_client()
+    chat_client = client.get_openai_client()
     chat_client.queue_reply("60 days.", model="gpt-5-mini")
 
     reply = route_question(chat_client, "What is your return window?", router_deployment="cascadia-router")
@@ -29,7 +29,7 @@ def test_route_question_records_the_underlying_model_not_the_deployment_name():
 
 def test_route_all_calls_once_per_question_in_order():
     client = FakeAIProjectClient()
-    chat_client = client.inference.get_chat_completions_client()
+    chat_client = client.get_openai_client()
     chat_client.queue_reply("reply one", model="gpt-5-mini")
     chat_client.queue_reply("reply two", model="gpt-5")
 
@@ -41,7 +41,7 @@ def test_route_all_calls_once_per_question_in_order():
 
 def test_summarize_routing_counts_per_underlying_model():
     client = FakeAIProjectClient()
-    chat_client = client.inference.get_chat_completions_client()
+    chat_client = client.get_openai_client()
     chat_client.queue_reply("a", model="gpt-5-mini")
     chat_client.queue_reply("b", model="gpt-5-mini")
     chat_client.queue_reply("c", model="gpt-5")

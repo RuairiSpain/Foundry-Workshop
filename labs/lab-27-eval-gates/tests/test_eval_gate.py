@@ -13,7 +13,7 @@ from solution.eval_gate import (
     run_evaluation_gate,
     score_reply,
 )
-from testing.foundry_mocks import FakeAgentApplicationsClient, FakeChatCompletionsClient
+from testing.foundry_mocks import FakeAgentApplicationsClient, FakeOpenAIClient
 
 
 def test_score_reply_full_and_zero():
@@ -26,7 +26,7 @@ def test_score_reply_with_no_required_phrases_is_a_perfect_score():
 
 
 def test_evaluate_deployment_averages_the_dataset():
-    chat_client = FakeChatCompletionsClient()
+    chat_client = FakeOpenAIClient()
     chat_client.queue_reply("You have 60 days.")
     chat_client.queue_reply("I'm not sure.")
 
@@ -43,7 +43,7 @@ def test_evaluate_deployment_averages_the_dataset():
 
 
 def test_gate_passes_when_candidate_matches_baseline():
-    chat_client = FakeChatCompletionsClient()
+    chat_client = FakeOpenAIClient()
     chat_client.queue_reply("You have 60 days.")  # baseline, question 1
     chat_client.queue_reply("Climbing protection is non-returnable.")  # baseline, question 2
     chat_client.queue_reply("You have 60 days.")  # candidate, question 1
@@ -57,7 +57,7 @@ def test_gate_passes_when_candidate_matches_baseline():
 
 
 def test_gate_fails_on_a_large_regression():
-    chat_client = FakeChatCompletionsClient()
+    chat_client = FakeOpenAIClient()
     chat_client.queue_reply("You have 60 days.")
     chat_client.queue_reply("Climbing protection is non-returnable.")
     chat_client.queue_reply("I'm not sure.")
@@ -71,7 +71,7 @@ def test_gate_fails_on_a_large_regression():
 
 
 def test_publish_if_gate_passes_publishes_and_canaries_on_success():
-    chat_client = FakeChatCompletionsClient()
+    chat_client = FakeOpenAIClient()
     chat_client.queue_reply("You have 60 days.")
     chat_client.queue_reply("Climbing protection is non-returnable.")
     chat_client.queue_reply("You have 60 days.")
@@ -95,7 +95,7 @@ def test_publish_if_gate_passes_publishes_and_canaries_on_success():
 
 
 def test_publish_if_gate_passes_raises_and_does_not_publish_on_regression():
-    chat_client = FakeChatCompletionsClient()
+    chat_client = FakeOpenAIClient()
     chat_client.queue_reply("You have 60 days.")
     chat_client.queue_reply("Climbing protection is non-returnable.")
     chat_client.queue_reply("I'm not sure.")

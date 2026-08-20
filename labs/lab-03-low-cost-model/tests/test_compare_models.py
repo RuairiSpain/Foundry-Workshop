@@ -10,7 +10,7 @@ from testing.foundry_mocks import FakeAIProjectClient
 
 def test_run_comparison_calls_both_deployments():
     client = FakeAIProjectClient()
-    chat_client = client.inference.get_chat_completions_client()
+    chat_client = client.get_openai_client()
     chat_client.queue_reply("We sell outdoor gear.", model="cascadia-low-cost", total_tokens=20)
     chat_client.queue_reply("Cascadia Outfitters sells outdoor recreation gear.", model="cascadia-router", total_tokens=35)
 
@@ -23,7 +23,7 @@ def test_run_comparison_calls_both_deployments():
 
 def test_run_comparison_returns_both_replies():
     client = FakeAIProjectClient()
-    chat_client = client.inference.get_chat_completions_client()
+    chat_client = client.get_openai_client()
     chat_client.queue_reply("short answer", model="cascadia-low-cost", total_tokens=20)
     chat_client.queue_reply("longer, more detailed answer", model="cascadia-router", total_tokens=35)
 
@@ -39,7 +39,7 @@ def test_run_comparison_returns_both_replies():
 
 def test_token_difference_is_router_minus_low_cost():
     client = FakeAIProjectClient()
-    chat_client = client.inference.get_chat_completions_client()
+    chat_client = client.get_openai_client()
     chat_client.queue_reply("short", total_tokens=20)
     chat_client.queue_reply("long", total_tokens=50)
 
@@ -52,7 +52,7 @@ def test_token_difference_is_router_minus_low_cost():
 
 def test_call_model_sends_the_prompt_as_a_single_user_message():
     client = FakeAIProjectClient()
-    chat_client = client.inference.get_chat_completions_client()
+    chat_client = client.get_openai_client()
     chat_client.queue_reply("reply one", total_tokens=10)
     chat_client.queue_reply("reply two", total_tokens=10)
 

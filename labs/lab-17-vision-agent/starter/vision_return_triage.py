@@ -46,7 +46,7 @@ class DamageAssessment:
 def assess_damaged_item(chat_client, image_path: Path, *, deployment_name: str, question: str) -> DamageAssessment:
     """Sends one damaged-gear photo to a vision-capable deployment."""
     # TODO(lab-17): build the message with build_vision_message(), call
-    # chat_client.complete() with it, and return a DamageAssessment.
+    # chat_client.chat.completions.create() with it, and return a DamageAssessment.
     raise NotImplementedError("assess_damaged_item is not implemented yet")
 
 
@@ -58,7 +58,7 @@ def main() -> None:
 
     endpoint = os.environ["FOUNDRY_PROJECT_ENDPOINT"]
     client = AIProjectClient(endpoint=endpoint, credential=DefaultAzureCredential())
-    chat_client = client.inference.get_chat_completions_client()
+    chat_client = client.get_openai_client()
     deployment_name = os.environ.get("VISION_DEPLOYMENT", "cascadia-vision")
 
     assessment = assess_damaged_item(

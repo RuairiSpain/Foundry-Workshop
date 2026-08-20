@@ -4,8 +4,14 @@ You'll extract structured fields from a receipt with Content
 Understanding, validate the extraction, and add it to Lab 07's
 knowledge base as a new source.
 
-**Verified against:** Azure AI Content Understanding, schema-based field
-extraction, as of writing this workshop.
+**Verified against:** `azure-ai-contentunderstanding` 1.2.0b3's schema-based
+field extraction, as of writing this workshop. The real
+`ContentUnderstandingClient` is a long-running-operation API
+(`begin_analyze()`, returning a poller you wait on) — this lab's
+`content_understanding_client.analyze()` simplifies that polling loop
+to one synchronous call, the same simplification
+`case-study/testing/foundry_mocks.py`'s `FakeContentUnderstandingClient`
+documents.
 
 ## Prerequisites
 

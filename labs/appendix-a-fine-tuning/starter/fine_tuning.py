@@ -2,12 +2,12 @@
 compares it against the shared router baseline (Lab 03's comparison
 pattern) on the same evaluation dataset shape Lab 15 introduced.
 
-Foundry's fine-tuning API was still in preview as of writing this
-workshop, so this module isn't verified against a stable public SDK the
-way most other labs are — `case-study/testing/foundry_mocks.py`'s
-`FakeFineTuningClient` models the shape every fine-tuning API in this
-family shares (submit against a training file, poll until done, get
-back a deployable model name), not one confirmed surface.
+Verified against `openai` 2.54.0's `client.fine_tuning.jobs` — Azure
+OpenAI exposes fine-tuning through the same OpenAI-compatible endpoint
+Lab 01 onward already uses for chat completions
+(`client.get_openai_client()`), not a Foundry-specific one. Whether
+fine-tuning is enabled for your project is a capability question for
+your instructor, not an SDK-shape one.
 """
 
 from __future__ import annotations
@@ -30,21 +30,21 @@ class FineTuningJobFailedError(RuntimeError):
     """Raised when a fine-tuning job's terminal status is 'failed'."""
 
 
-def submit_fine_tuning_job(fine_tuning_client, *, base_model: str, training_file_id: str, suffix: str):
+def submit_fine_tuning_job(fine_tuning_jobs_client, *, model: str, training_file: str, suffix: str):
     """Submits a fine-tuning job against an already-uploaded training file.
 
-    Call `fine_tuning_client.create(...)` with the three keyword
+    Call `fine_tuning_jobs_client.create(...)` with the three keyword
     arguments and return its result.
     """
     # TODO: submit and return the job.
     raise NotImplementedError
 
 
-def poll_until_complete(fine_tuning_client, job_id: str, *, max_polls: int = 10, poll_interval_seconds: float = 0.0):
+def poll_until_complete(fine_tuning_jobs_client, job_id: str, *, max_polls: int = 10, poll_interval_seconds: float = 0.0):
     """Polls a fine-tuning job until it succeeds or fails.
 
-    Call `fine_tuning_client.get(job_id)` up to `max_polls` times.
-    Return the job once its status is "succeeded". Raise
+    Call `fine_tuning_jobs_client.retrieve(job_id)` up to `max_polls`
+    times. Return the job once its status is "succeeded". Raise
     `FineTuningJobFailedError` on "failed". Sleep `poll_interval_seconds`
     between polls if it's truthy. Raise `TimeoutError` if no terminal
     status was reached within `max_polls`.
@@ -78,7 +78,7 @@ def compare_against_baseline(
     """Runs every eval question against both deployments and scores each
     reply's groundedness with `score_groundedness()`.
 
-    For each item, call `chat_client.complete()` once with
+    For each item, call `chat_client.chat.completions.create()` once with
     `fine_tuned_deployment` and once with `router_deployment`, in that
     order, and build one `BaselineComparison` per item.
     """
@@ -96,6 +96,7 @@ def summarize_comparison(results: list[BaselineComparison]) -> dict[str, int]:
 
 
 def main() -> None:  # pragma: no cover - real SDK wiring and CLI entry point, exercised manually
+    import json
     import os
 
     from azure.ai.projects import AIProjectClient
@@ -111,21 +112,27 @@ def main() -> None:  # pragma: no cover - real SDK wiring and CLI entry point, e
             "answer": "Opened safety gear like carabiners is non-returnable.",
         },
     ]
-    training_file = client.files.upload(file_path="cascadia-return-policy-examples.jsonl")
+    dataset_path = "cascadia-return-policy-examples.jsonl"
+    with open(dataset_path, "w") as dataset_file:
+        for record in build_fine_tuning_dataset(examples):
+            dataset_file.write(json.dumps(record) + "\n")
+
+    chat_client = client.get_openai_client()
+    with open(dataset_path, "rb") as dataset_file:
+        training_file = chat_client.files.create(file=dataset_file, purpose="fine-tune")
     job = submit_fine_tuning_job(
-        client.fine_tuning,
-        base_model=os.environ.get("LOW_COST_DEPLOYMENT", "cascadia-low-cost"),
-        training_file_id=training_file.id,
+        chat_client.fine_tuning.jobs,
+        model=os.environ.get("LOW_COST_DEPLOYMENT", "cascadia-low-cost"),
+        training_file=training_file.id,
         suffix="cascadia-returns",
     )
-    completed_job = poll_until_complete(client.fine_tuning, job.id, poll_interval_seconds=30)
+    completed_job = poll_until_complete(chat_client.fine_tuning.jobs, job.id, poll_interval_seconds=30)
     print(f"Fine-tuned model ready: {completed_job.fine_tuned_model}")
 
     eval_dataset = [
         {"question": "What is your return window?", "must_contain": ["60 days"]},
         {"question": "Can I return a carabiner I already opened?", "must_contain": ["non-returnable"]},
     ]
-    chat_client = client.inference.get_chat_completions_client()
     results = compare_against_baseline(
         chat_client,
         eval_dataset,

@@ -93,12 +93,12 @@ def handle_teams_message(
 def main() -> None:  # pragma: no cover - real SDK wiring, a live Teams channel, and a CLI entry point, exercised manually
     import os
 
-    from azure.ai.projects import AIProjectClient
+    from azure.ai.agents import AgentsClient
     from azure.identity import DefaultAzureCredential
 
     endpoint = os.environ["FOUNDRY_PROJECT_ENDPOINT"]
     tenant_id = os.environ["M365_TENANT_ID"]
-    client = AIProjectClient(endpoint=endpoint, credential=DefaultAzureCredential())
+    agents_client = AgentsClient(endpoint=endpoint, credential=DefaultAzureCredential())
 
     # Lab 09 built this agent and thread; a Teams-hosted deployment
     # would keep one thread per Teams conversation instead of one
@@ -106,11 +106,11 @@ def main() -> None:  # pragma: no cover - real SDK wiring, a live Teams channel,
     # the key.
     from order_status_agent import ask_in_thread, create_order_status_agent  # type: ignore[import-not-found]
 
-    agent = create_order_status_agent(client.agents, model=os.environ.get("LOW_COST_DEPLOYMENT", "cascadia-low-cost"))
-    thread = client.agents.create_thread()
+    agent = create_order_status_agent(agents_client, model=os.environ.get("LOW_COST_DEPLOYMENT", "cascadia-low-cost"))
+    thread = agents_client.threads.create()
 
     def ask(question: str) -> str:
-        return ask_in_thread(client.agents, thread.id, agent.id, question)
+        return ask_in_thread(agents_client, thread.id, agent.id, question)
 
     reply = handle_teams_message(
         ask,

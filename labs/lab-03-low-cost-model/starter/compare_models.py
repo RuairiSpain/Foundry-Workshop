@@ -26,7 +26,7 @@ class ComparisonResult:
 
 
 def _call_model(chat_client, *, deployment_name: str, prompt: str) -> ModelReply:
-    # TODO(lab-03): call chat_client.complete() with `model=deployment_name`
+    # TODO(lab-03): call chat_client.chat.completions.create() with `model=deployment_name`
     # and a one-message conversation containing `prompt`.
     #
     # TODO(lab-03): build and return a ModelReply from the response —
@@ -36,9 +36,9 @@ def _call_model(chat_client, *, deployment_name: str, prompt: str) -> ModelReply
 
 def run_comparison(client, prompt: str, *, low_cost_deployment: str, router_deployment: str) -> ComparisonResult:
     """Sends the same prompt to both deployments and returns both replies."""
-    # TODO(lab-03): get a chat completions client from client.inference,
-    # call _call_model() once per deployment, and return a
-    # ComparisonResult.
+    # TODO(lab-03): get the OpenAI-shaped client from
+    # client.get_openai_client(), call _call_model() once per
+    # deployment, and return a ComparisonResult.
     raise NotImplementedError("run_comparison is not implemented yet")
 
 

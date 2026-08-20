@@ -17,7 +17,7 @@ class TunedReply:
 def build_completion_kwargs(
     *, temperature: float = 1.0, top_p: float = 1.0, max_tokens: int = 256, seed: int | None = None
 ) -> dict:
-    """Assembles the keyword arguments for chat_client.complete()."""
+    """Assembles the keyword arguments for chat_client.chat.completions.create()."""
     # TODO(lab-05): build and return a dict with temperature, top_p, and
     # max_tokens. Include "seed" only when seed is not None.
     raise NotImplementedError("build_completion_kwargs is not implemented yet")
@@ -26,7 +26,7 @@ def build_completion_kwargs(
 def call_with_params(chat_client, prompt: str, *, deployment_name: str, **params) -> TunedReply:
     """Sends one prompt with the given inference parameters."""
     # TODO(lab-05): build kwargs with build_completion_kwargs(**params),
-    # call chat_client.complete() with model, a one-message conversation,
+    # call chat_client.chat.completions.create() with model, a one-message conversation,
     # and those kwargs, then return a TunedReply.
     raise NotImplementedError("call_with_params is not implemented yet")
 
@@ -65,7 +65,7 @@ def main() -> None:
 
     endpoint = os.environ["FOUNDRY_PROJECT_ENDPOINT"]
     client = AIProjectClient(endpoint=endpoint, credential=DefaultAzureCredential())
-    chat_client = client.inference.get_chat_completions_client()
+    chat_client = client.get_openai_client()
     deployment_name = os.environ.get("LOW_COST_DEPLOYMENT", "cascadia-low-cost")
 
     prompt = "In one sentence, what does Cascadia Outfitters sell?"
