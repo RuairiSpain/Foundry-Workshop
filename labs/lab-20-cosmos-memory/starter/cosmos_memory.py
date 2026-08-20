@@ -50,9 +50,11 @@ def distill_profile(turns: list[dict]) -> CustomerProfile:
     """Derives a small profile from raw turns: every SKU mentioned, and
     how many turns exist.
     """
-    # TODO(lab-20): raise ValueError for an empty list. Otherwise collect
-    # every SKU_PATTERN match across all turns' content into a set, and
-    # return a CustomerProfile with a sorted list of SKUs and the turn count.
+    # TODO(lab-20): raise ValueError for an empty list — the message must
+    # mention "zero turns". Otherwise collect every SKU_PATTERN match
+    # across all turns' content into a set, and return a CustomerProfile
+    # with the first turn's customerEmail, a sorted list of SKUs, and the
+    # turn count.
     raise NotImplementedError("distill_profile is not implemented yet")
 
 

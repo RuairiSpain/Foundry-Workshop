@@ -18,7 +18,10 @@ Open `starter/tuning.py`. Implement four functions:
 1. `build_completion_kwargs()` — return a dict with `temperature`,
    `top_p`, and `max_tokens`. Add `seed` only when it's not `None`.
 2. `call_with_params()` — build kwargs with `build_completion_kwargs()`,
-   call `chat_client.complete()`, and return a `TunedReply`.
+   call `chat_client.chat.completions.create()`, and return a
+   `TunedReply`. The cached-token count lives at
+   `response.usage.prompt_tokens_details.cached_tokens`, not
+   `response.usage.cached_tokens`.
 3. `sweep_temperature()` — call `call_with_params()` once per value in
    `temperatures`.
 4. `check_prompt_caching()` — call `call_with_params()` twice with the

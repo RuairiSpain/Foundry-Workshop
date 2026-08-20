@@ -37,7 +37,7 @@ Run the tests to check your work:
 LAB_TARGET=starter python3 -m pytest tests/ -v
 ```
 
-**Expected output:** 4 passed.
+**Expected output:** 5 passed.
 
 ## Step 2: Run it against your real project
 

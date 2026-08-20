@@ -69,11 +69,14 @@ def evaluate_release_gates(
     Lab 30's network validation, and Lab 32's governance policy into
     one release decision.
 
-    Collect every blocking reason (don't stop at the first): a
-    below-threshold eval score, then one reason per content-safety
-    violation (prefixed "Content Safety: "), one per network problem
-    (prefixed "Network: "), and one per governance violation (prefixed
-    "Governance: "). `cleared` is True only when there are no reasons.
+    Collect every blocking reason (don't stop at the first): if
+    `eval_score` is below `eval_threshold`, one reason starting with
+    "Evaluation score" (e.g. f"Evaluation score {eval_score} is below
+    the required threshold {eval_threshold}"), then one reason per
+    content-safety violation (prefixed "Content Safety: "), one per
+    network problem (prefixed "Network: "), and one per governance
+    violation (prefixed "Governance: "). `cleared` is True only when
+    there are no reasons.
     """
     # TODO: build and return the ReleaseGateResult.
     raise NotImplementedError

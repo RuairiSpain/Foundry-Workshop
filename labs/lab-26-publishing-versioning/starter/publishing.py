@@ -35,7 +35,9 @@ def canary_traffic_split(agent_applications_client, app_id: str, *, stable_versi
 
 def rollback_to_version(agent_applications_client, app_id: str, *, version: int):
     """Rolls back to a prior version, sending it 100% of traffic."""
-    # TODO(lab-26): call agent_applications_client.rollback().
+    # TODO(lab-26): call agent_applications_client.rollback(app_id,
+    # to_version=version). The client's keyword is to_version, not
+    # version — it doesn't match this function's own parameter name.
     raise NotImplementedError("rollback_to_version is not implemented yet")
 
 

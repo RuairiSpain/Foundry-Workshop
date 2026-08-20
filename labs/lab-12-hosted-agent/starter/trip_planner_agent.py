@@ -30,7 +30,10 @@ def build_trip_planner_agent(client) -> Agent:
     """Builds the Trip Planner as a single Microsoft Agent Framework agent."""
     # TODO(lab-12): return an Agent built from `client`, with a name,
     # instructions telling it to ground gear recommendations in the
-    # tool's output, and tools=[suggest_gear_for_trail].
+    # tool's output, and tools=[suggest_gear_for_trail]. Name the
+    # suggest_gear_for_trail tool by its exact function name somewhere
+    # in the instructions text — that's what tells the model which tool
+    # to call.
     raise NotImplementedError("build_trip_planner_agent is not implemented yet")
 
 

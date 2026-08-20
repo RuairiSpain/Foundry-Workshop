@@ -20,7 +20,9 @@ def build_trip_planner_with_swiftship(client, *, swiftship_url: str) -> Agent:
     SwiftShip instead of answering them itself.
     """
     # TODO(lab-25): build the SwiftShip client with build_swiftship_client(),
-    # then return an Agent with tools=[swiftship.as_tool()].
+    # then return an Agent with tools=[swiftship.as_tool()]. Give it
+    # instructions that explicitly tell it to delegate shipping-ETA
+    # questions to the swiftship tool.
     raise NotImplementedError("build_trip_planner_with_swiftship is not implemented yet")
 
 

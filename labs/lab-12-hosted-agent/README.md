@@ -30,7 +30,11 @@ Open `starter/trip_planner_agent.py`. Implement two functions:
    instead of guessing. Otherwise return a plain-language string with
    the difficulty, distance, and recommended gear.
 2. `build_trip_planner_agent()` — return an `Agent` built from `client`,
-   with a name, instructions, and `tools=[suggest_gear_for_trail]`.
+   with a name, instructions, and `tools=[suggest_gear_for_trail]`. Name
+   the `suggest_gear_for_trail` tool by its exact function name
+   somewhere in the instructions text — that's what tells the model
+   which tool to call, and it's how the tests confirm the tool is wired
+   in without making a live model call.
 
 Run the tests to check your work:
 

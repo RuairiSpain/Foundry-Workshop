@@ -50,7 +50,8 @@ not a Foundry SDK call.
 python3 starter/sandbox_tool.py
 ```
 
-**Expected output:** `Sandbox stdout: 7.2` and `Succeeded: True`.
+**Expected output:** `Sandbox stdout: 7.200000000000001` and
+`Succeeded: True` — floating-point addition, not a bug in your code.
 
 ## Step 4: Know what this sandbox doesn't do
 

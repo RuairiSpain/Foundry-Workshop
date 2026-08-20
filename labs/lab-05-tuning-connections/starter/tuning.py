@@ -27,7 +27,9 @@ def call_with_params(chat_client, prompt: str, *, deployment_name: str, **params
     """Sends one prompt with the given inference parameters."""
     # TODO(lab-05): build kwargs with build_completion_kwargs(**params),
     # call chat_client.chat.completions.create() with model, a one-message conversation,
-    # and those kwargs, then return a TunedReply.
+    # and those kwargs, then return a TunedReply. The cached-token count
+    # is at response.usage.prompt_tokens_details.cached_tokens, not
+    # response.usage.cached_tokens.
     raise NotImplementedError("call_with_params is not implemented yet")
 
 

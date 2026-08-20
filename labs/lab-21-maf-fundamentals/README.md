@@ -29,13 +29,14 @@ workshop.
 
 Open `starter/maf_layers.py`. Implement three functions:
 
-1. `build_agent_loop()` — the same `Agent` construction as Lab 12.
+1. `build_agent_loop()` — the same `Agent` construction as Lab 12, reusing
+   its `"cascadia-trip-planner"` name.
 2. `build_workflow()` — build the agent, then wrap it in
    `SequentialBuilder(participants=[agent]).build()`.
-3. `build_harness_agent()` — call `create_harness_agent()` with a name,
-   `agent_instructions`, the same tool, and `disable_web_search=True`
-   (the client in tests doesn't implement web search, so this avoids a
-   noisy warning).
+3. `build_harness_agent()` — call `create_harness_agent()` with the name
+   `"cascadia-trip-planner-harness"`, `agent_instructions`, the same
+   tool, and `disable_web_search=True` (the client in tests doesn't
+   implement web search, so this avoids a noisy warning).
 
 Run the tests to check your work:
 

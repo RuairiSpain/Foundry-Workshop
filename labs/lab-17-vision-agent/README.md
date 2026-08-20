@@ -33,7 +33,8 @@ Open `starter/vision_return_triage.py`. Implement four functions:
 3. `build_vision_message()` — a `user` message with a text part and an
    image part.
 4. `assess_damaged_item()` — build the message, call
-   `chat_client.complete()`, and return a `DamageAssessment`.
+   `chat_client.chat.completions.create()`, and return a
+   `DamageAssessment`.
 
 Run the tests to check your work:
 

@@ -35,6 +35,9 @@ Open `starter/trip_planner_client.py`. Implement two functions:
    then return a Trip Planner `Agent` with
    `tools=[swiftship.as_tool()]`. `.as_tool()` is what turns a whole
    remote agent into something another agent can call as a single tool.
+   Give the Trip Planner `instructions` that explicitly tell it to
+   delegate shipping-ETA questions to the `swiftship` tool — an agent
+   won't reach for a tool it isn't told to use.
 
 Run the tests to check your work:
 
