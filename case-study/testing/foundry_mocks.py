@@ -150,6 +150,97 @@ class FakeKnowledgeBasesClient:
 
 
 # ---------------------------------------------------------------------------
+# Agent Applications (Lab 26, reused by Lab 27) — publishing, version
+# snapshots, rollback, and traffic splitting. Separate from
+# FakeAgentsClient, since an agent and its published Agent Application
+# are different resources in Foundry too.
+# ---------------------------------------------------------------------------
+
+
+@dataclasses.dataclass
+class FakeAgentVersion:
+    version: int
+    agent_id: str
+    notes: str
+
+
+@dataclasses.dataclass
+class FakeAgentApplication:
+    id: str
+    name: str
+    versions: list[FakeAgentVersion]
+    traffic_split: dict[int, float]
+
+    def version_numbers(self) -> set[int]:
+        return {version.version for version in self.versions}
+
+
+class FakeAgentApplicationsClient:
+    def __init__(self) -> None:
+        self._apps: dict[str, FakeAgentApplication] = {}
+        self._counter = itertools.count(1)
+
+    def create(self, *, name: str, agent_id: str, notes: str = "") -> FakeAgentApplication:
+        version = FakeAgentVersion(version=1, agent_id=agent_id, notes=notes)
+        app = FakeAgentApplication(
+            id=f"app-{next(self._counter):04d}", name=name, versions=[version], traffic_split={1: 100.0}
+        )
+        self._apps[app.id] = app
+        return app
+
+    def get(self, app_id: str) -> FakeAgentApplication:
+        return self._apps[app_id]
+
+    def publish_version(self, app_id: str, *, agent_id: str, notes: str = "") -> FakeAgentVersion:
+        """Publishes a new version. New versions get 100% of traffic by
+        default — the same default the real Portal uses."""
+        app = self._apps[app_id]
+        next_number = len(app.versions) + 1
+        version = FakeAgentVersion(version=next_number, agent_id=agent_id, notes=notes)
+        app.versions.append(version)
+        app.traffic_split = {next_number: 100.0}
+        return version
+
+    def set_traffic_split(self, app_id: str, split: dict[int, float]) -> FakeAgentApplication:
+        app = self._apps[app_id]
+        unknown = set(split) - app.version_numbers()
+        if unknown:
+            raise ValueError(f"Unknown version(s): {sorted(unknown)}")
+        total = sum(split.values())
+        if abs(total - 100.0) > 1e-6:
+            raise ValueError(f"Traffic split must sum to 100, got {total}")
+        app.traffic_split = dict(split)
+        return app
+
+    def rollback(self, app_id: str, *, to_version: int) -> FakeAgentApplication:
+        app = self._apps[app_id]
+        if to_version not in app.version_numbers():
+            raise ValueError(f"Unknown version: {to_version}")
+        app.traffic_split = {to_version: 100.0}
+        return app
+
+
+# ---------------------------------------------------------------------------
+# Content Safety (Lab 29) — per-category severity scoring on a piece of
+# text, separate from the chat completions client since it's a distinct
+# Azure AI service, not a model call.
+# ---------------------------------------------------------------------------
+
+
+class FakeContentSafetyClient:
+    def __init__(self) -> None:
+        self._scripted: dict[str, dict[str, int]] = {}
+        self.calls: list[str] = []
+
+    def script_result(self, text: str, severities: dict[str, int]) -> None:
+        self._scripted[text] = severities
+
+    def analyze_text(self, text: str) -> dict[str, int]:
+        self.calls.append(text)
+        return self._scripted.get(text, {"hate": 0, "violence": 0, "self_harm": 0, "sexual": 0})
+
+
+# ---------------------------------------------------------------------------
 # Native long-term memory (Lab 19) — facts persisted per user, outside
 # any one thread. Separate from FakeAgentsClient's threads/messages,
 # since real Foundry memory outlives any single thread too.
@@ -351,3 +442,5 @@ class FakeAIProjectClient:
         self.knowledge_bases = FakeKnowledgeBasesClient()
         self.content_understanding = FakeContentUnderstandingClient()
         self.memory = FakeMemoryClient()
+        self.agent_applications = FakeAgentApplicationsClient()
+        self.content_safety = FakeContentSafetyClient()

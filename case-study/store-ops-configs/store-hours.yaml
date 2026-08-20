@@ -1,0 +1,6 @@
+seattle-flagship:
+  weekday: "9am-8pm"
+  weekend: "10am-6pm"
+portland:
+  weekday: "10am-7pm"
+  weekend: "10am-6pm"

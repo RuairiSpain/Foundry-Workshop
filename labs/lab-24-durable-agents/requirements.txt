@@ -1,0 +1,4 @@
+azure-functions==1.25.0
+azure-functions-durable==1.7.0
+pytest==9.1.1
+pytest-cov==7.0.0
