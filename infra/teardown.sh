@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 # Deletes the whole hub resource group: the hub, the router deployment,
 # every attendee project, the Cosmos DB account, and the gateway. Run
-# this after the workshop — nothing here scales to zero on its own, and
-# the gateway and Cosmos DB both bill while they exist.
+# this after the workshop — nothing here needs teardown between
+# sessions purely for cost (the hub, every model deployment, the
+# gateway's APIM Consumption tier, and the serverless Cosmos DB account
+# all bill per call or per token, not per idle hour), but nothing
+# deletes itself either, so this is still how you stop paying for
+# storage and get the resource names back once the workshop is over.
 #
 # Deleting the resource group is enough. Azure RBAC role assignments
 # and Cosmos DB role assignments are deleted along with the resources

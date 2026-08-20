@@ -13,8 +13,13 @@ Scripts that stand up the hub-and-spoke architecture from
    attendee, creates a Foundry project under the hub, a Cosmos DB
    container, and a gateway subscription key.
 
-Run `teardown.sh` after the workshop. Nothing here scales to zero on its
-own — the AI Gateway and Cosmos DB both bill while they exist.
+Run `teardown.sh` after the workshop. Nothing here needs tearing down
+between sessions purely to save money — the AI Gateway is APIM
+Consumption tier and the Cosmos DB account is serverless, so both bill
+per call instead of per idle hour, the same way every model deployment
+already bills per token. `teardown.sh` is still how you eventually stop
+paying for storage and reclaim the resource names once the workshop is
+fully over.
 
 ## Configuration
 

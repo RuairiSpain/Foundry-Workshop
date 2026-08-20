@@ -14,13 +14,15 @@ PRINCIPAL_ID="${2:?Usage: provision_attendee_container.sh <attendee_id> <princip
 CONTAINER_NAME="mem-${ATTENDEE_ID}"
 
 log "Creating container $CONTAINER_NAME"
+# No --throughput: the account is serverless (see cosmos/deploy_cosmos.sh)
+# and serverless containers don't take provisioned throughput — passing
+# one here fails with ThroughputNotSupportedForServerlessAccounts.
 az cosmosdb sql container create \
   --account-name "$COSMOS_ACCOUNT_NAME" \
   --resource-group "$HUB_RESOURCE_GROUP" \
   --database-name "$COSMOS_DATABASE_NAME" \
   --name "$CONTAINER_NAME" \
   --partition-key-path "/threadId" \
-  --throughput 400 \
   --output none
 
 COSMOS_ACCOUNT_ID=$(az cosmosdb show \
