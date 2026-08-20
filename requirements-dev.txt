@@ -1,0 +1,31 @@
+# Union of every lab's requirements.txt, for standing up one venv that
+# can run ./run_all_tests.sh end to end on a fresh machine.
+#
+# Each lab's own requirements.txt stays the source of truth for that
+# lab in isolation (its README's "cd labs/lab-NN-slug && pip install -r
+# requirements.txt" still works standalone) — this file exists only for
+# the instructor's own dev environment. Regenerate it with:
+#
+#   cat labs/*/requirements.txt | sort -u > requirements-dev.txt
+#
+# then re-add this header. No package is pinned to two different
+# versions across labs today; if a future lab needs one that conflicts
+# with an existing pin, resolve the conflict there before adding it
+# here, the same way you'd resolve it in any shared environment.
+
+agent-framework==1.14.0
+azure-ai-agents==1.1.0
+azure-ai-contentsafety==1.0.0
+azure-ai-projects==2.3.0
+azure-cosmos==4.16.3
+azure-functions==1.25.0
+azure-functions-durable==1.7.0
+azure-identity==1.25.3
+jupyter==1.1.1
+mcp==1.29.0
+microsoft-agents-activity==1.4.0
+microsoft-agents-hosting-core==1.4.0
+pytest==9.1.1
+pytest-asyncio==1.4.0
+pytest-cov==7.1.0
+requests==2.34.2
