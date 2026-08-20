@@ -74,10 +74,12 @@ def main() -> None:  # pragma: no cover - real SDK wiring and CLI entry point, e
     import os
 
     from agent_framework.foundry import FoundryChatClient
+    from azure.identity import DefaultAzureCredential
 
     client = FoundryChatClient(
         project_endpoint=os.environ["FOUNDRY_PROJECT_ENDPOINT"],
         model=os.environ.get("LOW_COST_DEPLOYMENT", "cascadia-low-cost"),
+        credential=DefaultAzureCredential(),
     )
 
     loop_agent = build_agent_loop(client)
@@ -86,7 +88,10 @@ def main() -> None:  # pragma: no cover - real SDK wiring and CLI entry point, e
 
     workflow = build_workflow(client)
     workflow_result = asyncio.run(workflow.run("Plan gear for the Cascade Pass Loop."))
-    print(f"Workflow: {workflow_result}")
+    # workflow_result is a WorkflowRunResult — every event the run
+    # emitted, not just the final answer. get_outputs() filters down to
+    # what the workflow actually produced.
+    print(f"Workflow: {workflow_result.get_outputs()}")
 
     harness_agent = build_harness_agent(client)
     harness_response = asyncio.run(harness_agent.run("Plan gear for the Cascade Pass Loop."))

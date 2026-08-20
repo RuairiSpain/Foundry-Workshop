@@ -29,10 +29,12 @@ def main() -> None:
     import os
 
     from agent_framework.foundry import FoundryChatClient
+    from azure.identity import DefaultAzureCredential
 
     client = FoundryChatClient(
         project_endpoint=os.environ["FOUNDRY_PROJECT_ENDPOINT"],
         model=os.environ.get("LOW_COST_DEPLOYMENT", "cascadia-low-cost"),
+        credential=DefaultAzureCredential(),
     )
     trip_planner = build_trip_planner_with_swiftship(
         client, swiftship_url=os.environ.get("SWIFTSHIP_A2A_URL", "http://localhost:8001/a2a")
