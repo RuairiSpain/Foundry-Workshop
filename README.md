@@ -11,7 +11,9 @@ brief, and the locked provisioning model.
 ## Status
 
 All 33 labs, plus the fine-tuning appendix, are written and tested —
-the curriculum in `docs/curriculum.md` is complete.
+the curriculum in `docs/curriculum.md` is complete. Every push to
+`main` and every pull request runs the full suite in CI — see
+`.github/workflows/tests.yml`.
 
 ## Repository layout
 

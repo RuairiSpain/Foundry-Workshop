@@ -1,0 +1,30 @@
+name: Tests
+
+# Runs every lab's suite on every push to main and every pull request.
+# One job, one shared venv (requirements-dev.txt — the union of every
+# lab's requirements.txt), then run_all_tests.sh runs each lab's tests
+# one at a time with coverage enforced at 100%. See
+# setup_dev_env.sh and .claude/CLAUDE.md for why labs can't be tested
+# in one combined `pytest labs/` run.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: requirements-dev.txt
+
+      - name: Install every lab's dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Run every lab's tests at 100% coverage
+        run: ./run_all_tests.sh
