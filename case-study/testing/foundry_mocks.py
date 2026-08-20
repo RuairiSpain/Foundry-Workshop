@@ -142,6 +142,58 @@ class FakeKnowledgeBasesClient:
         self._knowledge_bases[kb.id] = kb
         return kb
 
+    def add_source(self, knowledge_base_id: str, source: dict) -> FakeKnowledgeBase:
+        """Appends one source to an existing knowledge base (Lab 18)."""
+        kb = self._knowledge_bases[knowledge_base_id]
+        kb.sources.append(source)
+        return kb
+
+
+# ---------------------------------------------------------------------------
+# Native long-term memory (Lab 19) — facts persisted per user, outside
+# any one thread. Separate from FakeAgentsClient's threads/messages,
+# since real Foundry memory outlives any single thread too.
+# ---------------------------------------------------------------------------
+
+
+class FakeMemoryClient:
+    """Stands in for Foundry's native long-term agent memory store."""
+
+    def __init__(self) -> None:
+        self._facts: dict[str, list[str]] = {}
+
+    def remember(self, user_id: str, fact: str) -> None:
+        self._facts.setdefault(user_id, []).append(fact)
+
+    def recall(self, user_id: str) -> list[str]:
+        return list(self._facts.get(user_id, []))
+
+
+# ---------------------------------------------------------------------------
+# Content Understanding (Lab 18) — structured extraction from documents
+# and images, separate from both file search and knowledge bases.
+# ---------------------------------------------------------------------------
+
+
+class FakeContentUnderstandingClient:
+    """Stands in for an Azure Content Understanding analyzer client."""
+
+    def __init__(self) -> None:
+        self._scripted_results: dict[str, dict] = {}
+        self.calls: list[dict] = []
+
+    def script_result(self, file_path: str, result: dict) -> None:
+        self._scripted_results[file_path] = result
+
+    def analyze(self, *, file_path: str, schema: dict) -> dict:
+        self.calls.append({"file_path": file_path, "schema": schema})
+        if file_path not in self._scripted_results:
+            raise AssertionError(
+                f"FakeContentUnderstandingClient.analyze() called for {file_path!r} with no scripted "
+                "result. Call script_result() in your test first."
+            )
+        return self._scripted_results[file_path]
+
 
 # ---------------------------------------------------------------------------
 # Agents, threads, runs (Labs 08, 09, 10)
@@ -267,6 +319,13 @@ class FakeAgentsClient:
         thread was used per call without reaching into private state."""
         return len(self._threads)
 
+    @property
+    def last_thread_id(self) -> str:
+        """ID of the most recently created thread. Lets a test inspect
+        the thread a just-completed call used, without reaching into
+        private state."""
+        return next(reversed(self._threads))
+
 
 # ---------------------------------------------------------------------------
 # Top-level client (what solution code actually receives in tests)
@@ -290,3 +349,5 @@ class FakeAIProjectClient:
         self.files = FakeFilesClient()
         self.vector_stores = FakeVectorStoresClient()
         self.knowledge_bases = FakeKnowledgeBasesClient()
+        self.content_understanding = FakeContentUnderstandingClient()
+        self.memory = FakeMemoryClient()

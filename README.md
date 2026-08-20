@@ -10,7 +10,7 @@ brief, and the locked provisioning model.
 
 ## Status
 
-Labs 01–10 are written and tested. Labs 11–33 and the appendix are
+Labs 01–20 are written and tested. Labs 21–33 and the appendix are
 planned in `docs/curriculum.md`, not yet written.
 
 ## Repository layout
