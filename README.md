@@ -41,7 +41,24 @@ Each lab's `README.md` has the full walkthrough.
 
 Runs each lab's suite one at a time with coverage enforced at 100%. See
 the note in `.claude/CLAUDE.md` on why labs can't be tested in one
-combined `pytest labs/` run.
+combined `pytest labs/` run. This assumes every lab's dependencies are
+already installed in your active Python environment — see below to set
+that up from a fresh machine in one step.
+
+## Setting up one dev environment for every lab
+
+```bash
+./setup_dev_env.sh
+source .venv/bin/activate
+./run_all_tests.sh
+```
+
+Creates a single venv with `requirements-dev.txt` — the union of every
+lab's `requirements.txt` — so `./run_all_tests.sh` runs standalone on a
+fresh machine, without setting up 34 separate per-lab venvs first. This
+is for verifying or demoing the whole workshop at once; an attendee
+working through one lab still follows that lab's own README and
+`requirements.txt`, per "Running a lab" above.
 
 ## Setting up the workshop environment
 
