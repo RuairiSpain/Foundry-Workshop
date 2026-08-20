@@ -4,6 +4,10 @@ and confirms it answers a policy question correctly.
 This agent is built entirely in the Toolkit, no-code — this script
 exists to prove it works, the same role Lab 01's verify_setup.py played
 for your project.
+
+Verified against `azure-ai-agents` 1.1.0's `AgentsClient`: threads,
+messages, and runs are sub-clients (`.threads`, `.messages`, `.runs`),
+not flat methods on the agents client itself.
 """
 
 from __future__ import annotations
@@ -21,10 +25,13 @@ def ask_agent(agents_client, agent_id: str, question: str) -> str:
     conversation history — exactly what Lab 09's classic agent adds on
     purpose, and what this lab deliberately doesn't need yet.
     """
-    thread = agents_client.create_thread()
-    agents_client.create_message(thread_id=thread.id, role="user", content=question)
-    agents_client.create_and_process_run(thread_id=thread.id, agent_id=agent_id)
-    messages = agents_client.list_messages(thread_id=thread.id)
+    thread = agents_client.threads.create()
+    agents_client.messages.create(thread.id, role="user", content=question)
+    agents_client.runs.create_and_process(thread.id, agent_id=agent_id)
+    # order="asc" is explicit, not the default — the real service
+    # defaults to newest-first, which would make messages[-1] the
+    # oldest message instead of the agent's just-added reply.
+    messages = agents_client.messages.list(thread.id, order="asc")
     return messages[-1].content
 
 
@@ -45,13 +52,13 @@ def check_grounded_reply(agents_client, agent_id: str, question: str, *, must_co
 def main() -> None:  # pragma: no cover - real SDK wiring and CLI entry point, exercised manually
     import os
 
-    from azure.ai.projects import AIProjectClient
+    from azure.ai.agents import AgentsClient
     from azure.identity import DefaultAzureCredential
 
     endpoint = os.environ["FOUNDRY_PROJECT_ENDPOINT"]
     agent_id = os.environ["PROMPT_AGENT_ID"]
-    client = AIProjectClient(endpoint=endpoint, credential=DefaultAzureCredential())
-    reply = check_grounded_reply(client.agents, agent_id, "What is your return window?", must_contain="60 days")
+    agents_client = AgentsClient(endpoint=endpoint, credential=DefaultAzureCredential())
+    reply = check_grounded_reply(agents_client, agent_id, "What is your return window?", must_contain="60 days")
     print(f"Agent replied: {reply}")
 
 

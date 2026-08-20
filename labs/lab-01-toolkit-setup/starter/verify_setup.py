@@ -35,13 +35,14 @@ def check_connection(client, *, deployment_name: str = "cascadia-router") -> str
     Returns the reply text on success. Raises SetupCheckError with a
     hint on failure.
     """
-    # TODO(lab-01): get a chat completions client from `client.inference`.
+    # TODO(lab-01): get the OpenAI-shaped client from `client.get_openai_client()`.
     chat_client = None
 
-    # TODO(lab-01): call chat_client.complete() with `model=deployment_name`
-    # and a one-message conversation asking for the word "ready". Wrap the
-    # call in try/except and raise SetupCheckError with a hint on failure,
-    # using `raise ... from exc` to keep the original traceback.
+    # TODO(lab-01): call chat_client.chat.completions.create() with
+    # `model=deployment_name` and a one-message conversation asking for
+    # the word "ready". Wrap the call in try/except and raise
+    # SetupCheckError with a hint on failure, using `raise ... from exc`
+    # to keep the original traceback.
 
     # TODO(lab-01): return the reply text from the response.
     raise NotImplementedError("check_connection is not implemented yet")

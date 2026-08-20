@@ -27,12 +27,13 @@ this is the shared, quota-sensitive resource from Lab 03's README.
 
 Open `starter/router_triage.py`. Implement three functions:
 
-1. `route_question()` — call `chat_client.complete()` with
+1. `route_question()` — call `chat_client.chat.completions.create()` with
    `model=router_deployment`, then build a `RoutedReply` from the
    response. Read the underlying model from `response.model` — it's not
    the same string as `router_deployment`.
-2. `route_all()` — get a chat completions client from
-   `client.inference`, then call `route_question()` once per question.
+2. `route_all()` — get the OpenAI-shaped client from
+   `client.get_openai_client()`, then call `route_question()` once per
+   question.
 3. `summarize_routing()` — count how many questions each underlying
    model handled.
 

@@ -29,7 +29,7 @@ def triage_questions() -> list[str]:
 
 
 def route_question(chat_client, question: str, *, router_deployment: str) -> RoutedReply:
-    # TODO(lab-04): call chat_client.complete() with `model=router_deployment`
+    # TODO(lab-04): call chat_client.chat.completions.create() with `model=router_deployment`
     # and a one-message conversation containing `question`.
     #
     # TODO(lab-04): build and return a RoutedReply. The underlying model
@@ -40,8 +40,9 @@ def route_question(chat_client, question: str, *, router_deployment: str) -> Rou
 
 def route_all(client, questions: list[str], *, router_deployment: str) -> list[RoutedReply]:
     """Routes every question and returns one RoutedReply per question, in order."""
-    # TODO(lab-04): get a chat completions client from client.inference,
-    # then call route_question() once per question.
+    # TODO(lab-04): get the OpenAI-shaped client from
+    # client.get_openai_client(), then call route_question() once per
+    # question.
     raise NotImplementedError("route_all is not implemented yet")
 
 

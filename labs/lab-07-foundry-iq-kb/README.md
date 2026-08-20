@@ -5,7 +5,12 @@ documents and its product catalog, then compare its answer against Lab
 06's single-source file search on a question that needs both.
 
 **Verified against:** Foundry IQ knowledge bases (GA) and Foundry IQ
-Serverless (public preview), as of writing this workshop.
+Serverless (public preview), as of writing this workshop. Neither has a
+stable typed Python SDK yet — a real call goes through
+`AIProjectClient.send_request()` against the REST surface, which
+`create_knowledge_base()`'s `knowledge_bases_client` argument stands in
+for. File upload and vector store creation, by contrast, are the real,
+typed `azure-ai-agents` 1.1.0 `AgentsClient`.
 
 ## Prerequisites
 
@@ -41,9 +46,9 @@ Open `starter/foundry_iq.py`. Implement three functions:
 
 1. `build_sources()` — combine uploaded files and structured paths into
    one source list.
-2. `ask_knowledge_base()` — call `chat_client.complete()` with
-   `tools=[{"type": "knowledge_base"}]` and the knowledge base attached
-   through `tool_resources`.
+2. `ask_knowledge_base()` — call `chat_client.chat.completions.create()`
+   with `tools=[{"type": "knowledge_base"}]` and the knowledge base
+   attached through `tool_resources`.
 3. `compare_retrieval()` — call `ask_file_search()` and
    `ask_knowledge_base()`, and return a `RetrievalComparison`.
 

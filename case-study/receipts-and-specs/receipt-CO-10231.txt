@@ -1,0 +1,12 @@
+CASCADIA OUTFITTERS
+Seattle Flagship Store
+------------------------------
+Order:    CO-10231
+Customer: maya@example.com
+Date:     2026-06-14
+
+1x  2-Person Trail Tent, Green   $189.00
+------------------------------
+Total:    $189.00
+
+Thank you for shopping with us.

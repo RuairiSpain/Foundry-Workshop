@@ -17,7 +17,7 @@ class TunedReply:
 def build_completion_kwargs(
     *, temperature: float = 1.0, top_p: float = 1.0, max_tokens: int = 256, seed: int | None = None
 ) -> dict:
-    """Assembles the keyword arguments for chat_client.complete().
+    """Assembles the keyword arguments for chat_client.chat.completions.create().
 
     A separate function so a test can check the exact parameter set
     without also making a call. `seed` is omitted unless given — passing
@@ -33,7 +33,7 @@ def build_completion_kwargs(
 def call_with_params(chat_client, prompt: str, *, deployment_name: str, **params) -> TunedReply:
     """Sends one prompt with the given inference parameters."""
     kwargs = build_completion_kwargs(**params)
-    response = chat_client.complete(
+    response = chat_client.chat.completions.create(
         model=deployment_name,
         messages=[{"role": "user", "content": prompt}],
         **kwargs,
@@ -41,7 +41,7 @@ def call_with_params(chat_client, prompt: str, *, deployment_name: str, **params
     return TunedReply(
         content=response.choices[0].message.content,
         total_tokens=response.usage.total_tokens,
-        cached_tokens=response.usage.cached_tokens,
+        cached_tokens=response.usage.prompt_tokens_details.cached_tokens,
     )
 
 
@@ -67,7 +67,7 @@ def check_prompt_caching(chat_client, prompt: str, *, deployment_name: str) -> C
     """Sends the same prompt twice and reports whether the second call
     was served from the prompt cache.
 
-    A cache hit shows up as `usage.cached_tokens > 0` on the second
+    A cache hit shows up as `usage.prompt_tokens_details.cached_tokens > 0` on the second
     call. The first call is expected to miss, since there's nothing to
     cache yet.
     """
@@ -84,7 +84,7 @@ def main() -> None:  # pragma: no cover - real SDK wiring and CLI entry point, e
 
     endpoint = os.environ["FOUNDRY_PROJECT_ENDPOINT"]
     client = AIProjectClient(endpoint=endpoint, credential=DefaultAzureCredential())
-    chat_client = client.inference.get_chat_completions_client()
+    chat_client = client.get_openai_client()
     deployment_name = os.environ.get("LOW_COST_DEPLOYMENT", "cascadia-low-cost")
 
     prompt = "In one sentence, what does Cascadia Outfitters sell?"

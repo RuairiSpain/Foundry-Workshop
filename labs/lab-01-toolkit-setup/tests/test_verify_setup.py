@@ -14,7 +14,7 @@ from testing.foundry_mocks import FakeAIProjectClient
 
 def test_check_connection_returns_reply_text():
     client = FakeAIProjectClient()
-    client.inference.get_chat_completions_client().queue_reply("ready")
+    client.get_openai_client().queue_reply("ready")
 
     result = check_connection(client, deployment_name="cascadia-router")
 
@@ -23,7 +23,7 @@ def test_check_connection_returns_reply_text():
 
 def test_check_connection_sends_the_requested_deployment_name():
     client = FakeAIProjectClient()
-    chat_client = client.inference.get_chat_completions_client()
+    chat_client = client.get_openai_client()
     chat_client.queue_reply("ready")
 
     check_connection(client, deployment_name="cascadia-router")
@@ -33,7 +33,7 @@ def test_check_connection_sends_the_requested_deployment_name():
 
 def test_check_connection_wraps_failures_with_a_hint():
     client = FakeAIProjectClient()
-    # No reply queued: FakeChatCompletionsClient.complete() raises
+    # No reply queued: FakeOpenAIClient.chat.completions.create() raises
     # AssertionError, standing in for any real SDK failure.
 
     with pytest.raises(SetupCheckError, match="cascadia-router"):

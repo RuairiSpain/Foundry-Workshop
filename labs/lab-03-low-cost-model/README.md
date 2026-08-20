@@ -44,12 +44,12 @@ and length difference — you'll measure this in code next.
 
 Open `starter/compare_models.py`. Implement two functions:
 
-1. `_call_model()` — call `chat_client.complete()` with the given
-   deployment name and a one-message prompt, then build a `ModelReply`
-   from the response.
-2. `run_comparison()` — get a chat completions client from
-   `client.inference`, call `_call_model()` once per deployment, and
-   return a `ComparisonResult`.
+1. `_call_model()` — call `chat_client.chat.completions.create()` with
+   the given deployment name and a one-message prompt, then build a
+   `ModelReply` from the response.
+2. `run_comparison()` — get the OpenAI-shaped client from
+   `client.get_openai_client()`, call `_call_model()` once per
+   deployment, and return a `ComparisonResult`.
 
 Run the tests to check your work:
 
@@ -72,7 +72,7 @@ python3 starter/compare_models.py
 
 ## Where this fits
 
-The `client.inference.get_chat_completions_client()` call you just wrote
-is the one piece of SDK plumbing every later lab reuses. Lab 04 replaces
+The `client.get_openai_client()` call you just wrote is the one piece
+of SDK plumbing every later lab reuses. Lab 04 replaces
 the second deployment with the router's dynamic routing behavior. Lab 05
 adds inference parameters and prompt caching to this same call shape.

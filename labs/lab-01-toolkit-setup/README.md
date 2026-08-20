@@ -6,7 +6,7 @@ finish by writing a script that proves your project can reach the hub's
 shared model.
 
 **Verified against:** Foundry Toolkit for VS Code (`ms-windows-ai-studio.windows-ai-studio`),
-`azure-ai-projects` 1.0.0b12, as of writing this workshop. If an
+`azure-ai-projects` 2.3.0, as of writing this workshop. If an
 extension screen looks different from this README, the extension has
 likely shipped an update — ask your instructor.
 
@@ -78,9 +78,12 @@ under **My Resources**.
 
 Open `starter/verify_setup.py`. Implement `check_connection()`:
 
-1. Get a chat completions client from `client.inference`.
+1. Get the OpenAI-shaped client with `client.get_openai_client()` —
+   Foundry's chat completions go through the `openai.OpenAI` client
+   shape, not a Foundry-specific one.
 2. Send one message asking the model to reply with the word "ready",
-   using the `deployment_name` argument as the model.
+   using the `deployment_name` argument as the model, via
+   `chat_client.chat.completions.create()`.
 3. If the call fails, raise `SetupCheckError` with a hint, using
    `raise ... from exc` so the original error is still visible.
 4. Return the reply text.

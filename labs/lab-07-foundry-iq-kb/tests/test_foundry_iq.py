@@ -12,11 +12,11 @@ from solution.foundry_iq import (
     create_knowledge_base,
     upload_documents,
 )
-from testing.foundry_mocks import FakeChatCompletionsClient, FakeFilesClient, FakeKnowledgeBasesClient
+from testing.foundry_mocks import FakeAgentFilesClient, FakeKnowledgeBasesClient, FakeOpenAIClient
 
 
 def test_build_sources_combines_file_and_structured_sources():
-    files_client = FakeFilesClient()
+    files_client = FakeAgentFilesClient()
     uploaded = upload_documents(files_client, ["a.md", "b.md"])
 
     sources = build_sources(uploaded, ["catalog.csv"])
@@ -39,7 +39,7 @@ def test_create_knowledge_base_stores_all_sources():
 
 
 def test_ask_knowledge_base_attaches_the_knowledge_base_tool():
-    chat_client = FakeChatCompletionsClient()
+    chat_client = FakeOpenAIClient()
     chat_client.queue_reply("The tent is $189 and yes, returnable within 60 days.")
 
     answer = ask_knowledge_base(
@@ -53,7 +53,7 @@ def test_ask_knowledge_base_attaches_the_knowledge_base_tool():
 
 
 def test_ask_file_search_attaches_the_file_search_tool_not_knowledge_base():
-    chat_client = FakeChatCompletionsClient()
+    chat_client = FakeOpenAIClient()
     chat_client.queue_reply("Returnable within 60 days. Price not in these documents.")
 
     ask_file_search(chat_client, "question", deployment_name="cascadia-low-cost", vector_store_id="vs-0001")
@@ -63,7 +63,7 @@ def test_ask_file_search_attaches_the_file_search_tool_not_knowledge_base():
 
 
 def test_compare_retrieval_shows_foundry_iq_answers_the_price_part_too():
-    chat_client = FakeChatCompletionsClient()
+    chat_client = FakeOpenAIClient()
     chat_client.queue_reply("It's returnable within 60 days. I don't have pricing information.")
     chat_client.queue_reply("The tent is $189.00 and returnable within 60 days.")
 

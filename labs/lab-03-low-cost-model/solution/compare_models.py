@@ -31,7 +31,7 @@ class ComparisonResult:
 
 
 def _call_model(chat_client, *, deployment_name: str, prompt: str) -> ModelReply:
-    response = chat_client.complete(
+    response = chat_client.chat.completions.create(
         model=deployment_name,
         messages=[{"role": "user", "content": prompt}],
     )
@@ -44,7 +44,7 @@ def _call_model(chat_client, *, deployment_name: str, prompt: str) -> ModelReply
 
 def run_comparison(client, prompt: str, *, low_cost_deployment: str, router_deployment: str) -> ComparisonResult:
     """Sends the same prompt to both deployments and returns both replies."""
-    chat_client = client.inference.get_chat_completions_client()
+    chat_client = client.get_openai_client()
     low_cost = _call_model(chat_client, deployment_name=low_cost_deployment, prompt=prompt)
     router = _call_model(chat_client, deployment_name=router_deployment, prompt=prompt)
     return ComparisonResult(low_cost=low_cost, router=router)

@@ -10,8 +10,8 @@ brief, and the locked provisioning model.
 
 ## Status
 
-Labs 01–10 are written and tested. Labs 11–33 and the appendix are
-planned in `docs/curriculum.md`, not yet written.
+All 33 labs, plus the fine-tuning appendix, are written and tested —
+the curriculum in `docs/curriculum.md` is complete.
 
 ## Repository layout
 

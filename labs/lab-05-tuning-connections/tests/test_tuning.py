@@ -10,7 +10,7 @@ from solution.tuning import (
     check_prompt_caching,
     sweep_temperature,
 )
-from testing.foundry_mocks import FakeChatCompletionsClient
+from testing.foundry_mocks import FakeOpenAIClient
 
 
 def test_build_completion_kwargs_omits_seed_by_default():
@@ -26,7 +26,7 @@ def test_build_completion_kwargs_includes_seed_when_given():
 
 
 def test_call_with_params_forwards_parameters_to_the_client():
-    chat_client = FakeChatCompletionsClient()
+    chat_client = FakeOpenAIClient()
     chat_client.queue_reply("a reply", total_tokens=30)
 
     call_with_params(chat_client, "hello", deployment_name="cascadia-low-cost", temperature=0.2, max_tokens=50)
@@ -38,7 +38,7 @@ def test_call_with_params_forwards_parameters_to_the_client():
 
 
 def test_call_with_params_returns_a_tuned_reply():
-    chat_client = FakeChatCompletionsClient()
+    chat_client = FakeOpenAIClient()
     chat_client.queue_reply("a reply", total_tokens=30, cached_tokens=0)
 
     reply = call_with_params(chat_client, "hello", deployment_name="cascadia-low-cost")
@@ -49,7 +49,7 @@ def test_call_with_params_returns_a_tuned_reply():
 
 
 def test_sweep_temperature_calls_once_per_value_in_order():
-    chat_client = FakeChatCompletionsClient()
+    chat_client = FakeOpenAIClient()
     chat_client.queue_reply("cold reply", total_tokens=10)
     chat_client.queue_reply("warm reply", total_tokens=10)
     chat_client.queue_reply("hot reply", total_tokens=10)
@@ -61,7 +61,7 @@ def test_sweep_temperature_calls_once_per_value_in_order():
 
 
 def test_check_prompt_caching_reports_no_hit_when_neither_call_is_cached():
-    chat_client = FakeChatCompletionsClient()
+    chat_client = FakeOpenAIClient()
     chat_client.queue_reply("first", cached_tokens=0)
     chat_client.queue_reply("second", cached_tokens=0)
 
@@ -71,7 +71,7 @@ def test_check_prompt_caching_reports_no_hit_when_neither_call_is_cached():
 
 
 def test_check_prompt_caching_reports_a_hit_when_the_second_call_is_cached():
-    chat_client = FakeChatCompletionsClient()
+    chat_client = FakeOpenAIClient()
     chat_client.queue_reply("first", cached_tokens=0)
     chat_client.queue_reply("second", cached_tokens=48)
 

@@ -38,9 +38,11 @@ is non-returnable once removed from packaging.
 Open `starter/knowledge_base.py`. Implement five functions:
 
 1. `upload_documents()` — call `files_client.upload()` once per path.
+   In `main()`, `files_client` is `AgentsClient.files` — file upload is
+   an agents-client operation, not a project-client one.
 2. `build_knowledge_base()` — collect the uploaded files' IDs and call
-   `vector_stores_client.create()`.
-3. `ask_grounded()` — call `chat_client.complete()` with
+   `vector_stores_client.create()` (also `AgentsClient.vector_stores`).
+3. `ask_grounded()` — call `chat_client.chat.completions.create()` with
    `tools=[{"type": "file_search"}]` and the vector store attached
    through `tool_resources`.
 4. `ask_ungrounded()` — the same call with no tools.

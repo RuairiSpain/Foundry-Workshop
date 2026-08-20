@@ -11,11 +11,11 @@ from solution.knowledge_base import (
     compare_grounding,
     upload_documents,
 )
-from testing.foundry_mocks import FakeChatCompletionsClient, FakeFilesClient, FakeVectorStoresClient
+from testing.foundry_mocks import FakeAgentFilesClient, FakeAgentVectorStoresClient, FakeOpenAIClient
 
 
 def test_upload_documents_uploads_each_path_in_order():
-    files_client = FakeFilesClient()
+    files_client = FakeAgentFilesClient()
 
     uploaded = upload_documents(files_client, ["a.md", "b.md"])
 
@@ -23,8 +23,8 @@ def test_upload_documents_uploads_each_path_in_order():
 
 
 def test_build_knowledge_base_uses_the_uploaded_file_ids():
-    files_client = FakeFilesClient()
-    vector_stores_client = FakeVectorStoresClient()
+    files_client = FakeAgentFilesClient()
+    vector_stores_client = FakeAgentVectorStoresClient()
     uploaded = upload_documents(files_client, ["a.md", "b.md"])
 
     store = build_knowledge_base(vector_stores_client, uploaded, name="cascadia-policy-kb")
@@ -34,7 +34,7 @@ def test_build_knowledge_base_uses_the_uploaded_file_ids():
 
 
 def test_ask_grounded_attaches_file_search_with_the_vector_store():
-    chat_client = FakeChatCompletionsClient()
+    chat_client = FakeOpenAIClient()
     chat_client.queue_reply("Grounded answer.")
 
     answer = ask_grounded(chat_client, "question", deployment_name="cascadia-low-cost", vector_store_id="vs-0001")
@@ -46,7 +46,7 @@ def test_ask_grounded_attaches_file_search_with_the_vector_store():
 
 
 def test_ask_ungrounded_sends_no_tools():
-    chat_client = FakeChatCompletionsClient()
+    chat_client = FakeOpenAIClient()
     chat_client.queue_reply("Ungrounded answer.")
 
     answer = ask_ungrounded(chat_client, "question", deployment_name="cascadia-low-cost")
@@ -57,7 +57,7 @@ def test_ask_ungrounded_sends_no_tools():
 
 
 def test_compare_grounding_returns_both_answers():
-    chat_client = FakeChatCompletionsClient()
+    chat_client = FakeOpenAIClient()
     chat_client.queue_reply("Grounded: no, protection is non-returnable once opened.")
     chat_client.queue_reply("Ungrounded: check the return policy for details.")
 

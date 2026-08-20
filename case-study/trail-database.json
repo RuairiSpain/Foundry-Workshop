@@ -1,0 +1,17 @@
+{
+  "Cascade Pass Loop": {
+    "difficulty": "moderate",
+    "distance_km": 12.5,
+    "recommended_gear": ["Trail Boot", "Trekking Pole Pair", "Rain Shell"]
+  },
+  "Skyline Divide": {
+    "difficulty": "strenuous",
+    "distance_km": 14.0,
+    "recommended_gear": ["Trail Boot", "45L Daypack", "Canister Camp Stove"]
+  },
+  "Rattlesnake Ledge": {
+    "difficulty": "easy",
+    "distance_km": 6.0,
+    "recommended_gear": ["Trail Boot"]
+  }
+}

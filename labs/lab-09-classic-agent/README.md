@@ -3,7 +3,7 @@
 You'll build an order-status agent in code, with real Python functions
 as tools, and exercise it across two turns in the same thread.
 
-**Verified against:** `azure-ai-projects` 1.0.0b12 agents surface, as of
+**Verified against:** `azure-ai-agents` 1.1.0's `AgentsClient`, as of
 writing this workshop.
 
 ## Prerequisites
