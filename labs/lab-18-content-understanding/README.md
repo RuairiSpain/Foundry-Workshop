@@ -55,7 +55,7 @@ Open `starter/content_understanding.py`. Implement four functions:
 Run the tests to check your work:
 
 ```bash
-python3 -m pytest tests/ -v
+LAB_TARGET=starter python3 -m pytest tests/ -v
 ```
 
 **Expected output:** 7 passed.

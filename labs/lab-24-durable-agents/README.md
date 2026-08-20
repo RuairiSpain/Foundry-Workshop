@@ -38,7 +38,7 @@ Open `starter/durable_fulfillment.py`. Implement two functions:
 Run the tests to check your work:
 
 ```bash
-python3 -m pytest tests/ -v
+LAB_TARGET=starter python3 -m pytest tests/ -v
 ```
 
 **Expected output:** 6 passed. These tests never start a Functions

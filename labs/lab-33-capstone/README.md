@@ -42,7 +42,7 @@ Open `starter/governed_ecosystem.py`. Implement four functions:
 Run the tests to check your work:
 
 ```bash
-python3 -m pytest tests/ -v
+LAB_TARGET=starter python3 -m pytest tests/ -v
 ```
 
 **Expected output:** 11 passed. If you don't have GitHub Copilot SDK

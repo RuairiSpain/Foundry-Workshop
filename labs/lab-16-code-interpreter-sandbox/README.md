@@ -37,7 +37,7 @@ Open `starter/sandbox_tool.py`. Implement three functions:
 Run the tests to check your work:
 
 ```bash
-python3 -m pytest tests/ -v
+LAB_TARGET=starter python3 -m pytest tests/ -v
 ```
 
 **Expected output:** 6 passed. Two of these tests spawn a real

@@ -40,7 +40,7 @@ Open `starter/router_triage.py`. Implement three functions:
 Run the tests to check your work:
 
 ```bash
-python3 -m pytest tests/ -v
+LAB_TARGET=starter python3 -m pytest tests/ -v
 ```
 
 **Expected output:** 5 passed.

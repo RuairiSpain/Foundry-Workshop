@@ -27,7 +27,7 @@ Open `starter/eval_gate.py`. Implement four functions:
 Run the tests to check your work:
 
 ```bash
-python3 -m pytest tests/ -v
+LAB_TARGET=starter python3 -m pytest tests/ -v
 ```
 
 **Expected output:** 7 passed. Two tests confirm the gate does its job

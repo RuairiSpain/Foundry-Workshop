@@ -27,7 +27,7 @@ Open `starter/function_app.py`. Implement two route handlers:
 Run the tests to check your work:
 
 ```bash
-python3 -m pytest tests/test_function_app.py -v
+LAB_TARGET=starter python3 -m pytest tests/test_function_app.py -v
 ```
 
 **Expected output:** 7 passed. These tests call your handlers directly,
@@ -72,7 +72,7 @@ curl "http://localhost:7071/api/warehouse-stock?sku=TENT-2P-GRN"
 Run the tests to check your work:
 
 ```bash
-python3 -m pytest tests/test_function_tool_client.py -v
+LAB_TARGET=starter python3 -m pytest tests/test_function_tool_client.py -v
 ```
 
 **Expected output:** 10 passed.

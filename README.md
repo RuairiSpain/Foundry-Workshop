@@ -30,10 +30,19 @@ labs/lab-NN-slug/     One lab: README, starter, solution, tests, requirements
 cd labs/lab-01-toolkit-setup
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-python3 -m pytest tests/ -v
+LAB_TARGET=starter python3 -m pytest tests/ -v
 ```
 
-Each lab's `README.md` has the full walkthrough.
+Each lab's `README.md` has the full walkthrough — implement the TODOs
+in `starter/`, then run its tests with `LAB_TARGET=starter` set. Every
+lab's `tests/` imports `from solution.X import ...` on purpose, so
+`run_all_tests.sh` and CI can prove the reference solution is correct
+without depending on anyone's in-progress edits. `LAB_TARGET=starter`
+(handled by the root `conftest.py`) transparently redirects those same
+imports to `starter/` instead, so the exact same test file checks your
+own code — plain `pytest tests/ -v` with no env var checks the
+solution, which is already complete, and will report "N passed" no
+matter what (or whether) you've written in `starter/` yet.
 
 ## Running every lab's tests
 
