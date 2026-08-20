@@ -4,7 +4,7 @@ You'll store conversation turns in your own Cosmos DB container — the
 Agent Memory Toolkit pattern — and distill them into a small customer
 profile, instead of relying on Lab 19's managed memory store.
 
-**Verified against:** `azure-cosmos` 4.9.0, as of writing this workshop.
+**Verified against:** `azure-cosmos` 4.16.3, as of writing this workshop.
 
 ## Prerequisites
 
@@ -30,7 +30,9 @@ Open `starter/cosmos_memory.py`. Implement four functions:
 2. `store_turn()` — build a document and call
    `container.upsert_item()`.
 3. `search_memory_by_customer()` — call `container.query_items()` with
-   a predicate matching the customer's email.
+   a SQL `query` filtering on `c.customerEmail`, its bound
+   `parameters`, and `enable_cross_partition_query=True` (customerEmail
+   isn't the partition key, so the match can be in any partition).
 4. `distill_profile()` — raise `ValueError` for an empty turn list.
    Otherwise collect every SKU mentioned across all turns into a sorted,
    deduplicated list, and return a `CustomerProfile`.

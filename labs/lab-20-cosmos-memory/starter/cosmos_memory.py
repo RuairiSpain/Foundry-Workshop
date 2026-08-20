@@ -30,8 +30,12 @@ def store_turn(container, *, thread_id: str, role: str, content: str, customer_e
 
 def search_memory_by_customer(container, *, customer_email: str) -> list[dict]:
     """Returns every stored turn for one customer, across all threads."""
-    # TODO(lab-20): call container.query_items() with a predicate that
-    # matches item["customerEmail"] == customer_email.
+    # TODO(lab-20): call container.query_items() with
+    # query="SELECT * FROM c WHERE c.customerEmail = @email",
+    # parameters=[{"name": "@email", "value": customer_email}], and
+    # enable_cross_partition_query=True — customerEmail isn't the
+    # partition key, so this needs to search across all of them. Wrap
+    # the result in list(...).
     raise NotImplementedError("search_memory_by_customer is not implemented yet")
 
 
