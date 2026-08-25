@@ -11,15 +11,21 @@ of writing this workshop.
 
 - Lab 07 complete: `cascadia-foundry-iq` exists.
 - Lab 11 complete: `cascadia-loyalty` is registered in the Toolbox.
+- A Bing grounding connection in your Foundry project (Foundry Portal >
+  Management center > Connections > Add connection > Grounding with
+  Bing Search), so the concierge can answer live-conditions questions.
+  Copy its resource ID — you'll set it as `BING_CONNECTION_ID` in Step
+  2.
 
 ## Step 1: Implement the agent
 
 Open `starter/concierge_agent.py`. Implement two functions:
 
 1. `build_concierge_agent()` — call `agents_client.create_agent()` with
-   all three tools (`WEB_SEARCH_TOOL`, `KNOWLEDGE_BASE_TOOL`,
-   `TOOLBOX_TOOL`, already defined in the file) and the knowledge base
-   attached through `tool_resources`.
+   all three tools (`build_web_search_tool(bing_connection_id)`,
+   `KNOWLEDGE_BASE_TOOL`, `TOOLBOX_TOOL` — the latter two already
+   defined in the file) and the knowledge base attached through
+   `tool_resources`.
 2. `ask_concierge()` — create a thread, add a user message, process a
    run, and return the last message's content. The same shape as Lab
    08's `ask_agent()`, written fresh here since each lab stays
@@ -28,7 +34,7 @@ Open `starter/concierge_agent.py`. Implement two functions:
 Run the tests to check your work:
 
 ```bash
-python3 -m pytest tests/ -v
+LAB_TARGET=starter python3 -m pytest tests/ -v
 ```
 
 **Expected output:** 4 passed.
@@ -38,6 +44,7 @@ python3 -m pytest tests/ -v
 ```bash
 export FOUNDRY_PROJECT_ENDPOINT="<your project endpoint>"
 export FOUNDRY_IQ_KNOWLEDGE_BASE_ID="<your kb-... ID from Lab 07>"
+export BING_CONNECTION_ID="<your Bing grounding connection's resource ID>"
 python3 starter/concierge_agent.py
 ```
 

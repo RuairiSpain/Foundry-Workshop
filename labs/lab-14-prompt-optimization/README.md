@@ -31,16 +31,16 @@ Open `starter/prompt_scoring.py`. Implement three functions:
 1. `score_reply()` — return the fraction of `must_contain` phrases
    found in `reply`, case-insensitively. An empty `must_contain` list
    scores 1.0.
-2. `score_system_prompt()` — call `chat_client.complete()` once per
-   question, with a system message and a user message, and score each
-   reply.
+2. `score_system_prompt()` — call
+   `chat_client.chat.completions.create()` once per question, with a
+   system message and a user message, and score each reply.
 3. `compare_prompts()` — call `score_system_prompt()` for both prompts
    and return a `PromptComparison`.
 
 Run the tests to check your work:
 
 ```bash
-python3 -m pytest tests/ -v
+LAB_TARGET=starter python3 -m pytest tests/ -v
 ```
 
 **Expected output:** 7 passed.

@@ -106,10 +106,12 @@ def main() -> None:  # pragma: no cover - real SDK wiring, live model calls, and
     import os
 
     from agent_framework.foundry import FoundryChatClient
+    from azure.identity import DefaultAzureCredential
 
     client = FoundryChatClient(
         project_endpoint=os.environ["FOUNDRY_PROJECT_ENDPOINT"],
         model=os.environ.get("ROUTER_DEPLOYMENT", "cascadia-router"),
+        credential=DefaultAzureCredential(),
     )
 
     magentic_workflow = build_magentic_workflow(client)
@@ -118,7 +120,12 @@ def main() -> None:  # pragma: no cover - real SDK wiring, live model calls, and
             "Maya asks: I loved my last order, what trail and gear bundle would you promote to hikers like me?"
         )
     )
-    print(result)
+    # result is a WorkflowRunResult — a list of every event the run
+    # emitted (agent handoffs, tool calls, status changes), not just the
+    # final answer. get_outputs() filters down to what the workflow
+    # actually produced.
+    for output in result.get_outputs():
+        print(output)
 
 
 if __name__ == "__main__":  # pragma: no cover

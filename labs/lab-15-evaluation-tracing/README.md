@@ -34,7 +34,7 @@ error the first time a call's result is an error dict.
 Run the tests to check your work:
 
 ```bash
-python3 -m pytest tests/ -v
+LAB_TARGET=starter python3 -m pytest tests/ -v
 ```
 
 **Expected output:** 10 passed.

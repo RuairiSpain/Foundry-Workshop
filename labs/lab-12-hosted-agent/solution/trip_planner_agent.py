@@ -57,10 +57,12 @@ def main() -> None:  # pragma: no cover - real SDK wiring and CLI entry point, e
     import os
 
     from agent_framework.foundry import FoundryChatClient
+    from azure.identity import DefaultAzureCredential
 
     client = FoundryChatClient(
         project_endpoint=os.environ["FOUNDRY_PROJECT_ENDPOINT"],
         model=os.environ.get("LOW_COST_DEPLOYMENT", "cascadia-low-cost"),
+        credential=DefaultAzureCredential(),
     )
     agent = build_trip_planner_agent(client)
     response = asyncio.run(agent.run("Plan gear for the Cascade Pass Loop."))

@@ -40,7 +40,7 @@ that isn't `"Disabled"`, and flag a missing private endpoint when it is.
 Run the tests to check your work:
 
 ```bash
-python3 -m pytest tests/ -v
+LAB_TARGET=starter python3 -m pytest tests/ -v
 ```
 
 **Expected output:** 9 passed.

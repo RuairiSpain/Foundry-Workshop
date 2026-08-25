@@ -24,7 +24,7 @@ Open `starter/responsible_ai.py`. Implement two functions:
 Run the tests to check your work:
 
 ```bash
-python3 -m pytest tests/ -v
+LAB_TARGET=starter python3 -m pytest tests/ -v
 ```
 
 **Expected output (partial):** the two policy tests should pass first —

@@ -30,7 +30,7 @@ Open `starter/fleet_observability.py`. Implement five functions:
 Run the tests to check your work:
 
 ```bash
-python3 -m pytest tests/ -v
+LAB_TARGET=starter python3 -m pytest tests/ -v
 ```
 
 **Expected output:** 8 passed — each finding exactly the one planted

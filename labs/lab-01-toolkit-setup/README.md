@@ -91,7 +91,7 @@ Open `starter/verify_setup.py`. Implement `check_connection()`:
 Run the tests to check your work:
 
 ```bash
-python3 -m pytest tests/ -v
+LAB_TARGET=starter python3 -m pytest tests/ -v
 ```
 
 **Expected output:** 3 passed.

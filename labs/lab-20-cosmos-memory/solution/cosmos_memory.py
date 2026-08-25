@@ -38,10 +38,18 @@ def store_turn(container, *, thread_id: str, role: str, content: str, customer_e
 def search_memory_by_customer(container, *, customer_email: str) -> list[dict]:
     """Returns every stored turn for one customer, across all threads.
 
-    A real Cosmos query would run this filter as SQL; the fake container
-    runs it as a Python predicate instead — same calling code either way.
+    Cross-partition, since `threadId` (not `customerEmail`) is the
+    partition key — one customer's turns can be spread across many
+    threads/partitions, so `enable_cross_partition_query=True` is
+    required for this query to see all of them.
     """
-    return container.query_items(predicate=lambda item: item["customerEmail"] == customer_email)
+    return list(
+        container.query_items(
+            query="SELECT * FROM c WHERE c.customerEmail = @email",
+            parameters=[{"name": "@email", "value": customer_email}],
+            enable_cross_partition_query=True,
+        )
+    )
 
 
 @dataclasses.dataclass

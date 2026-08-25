@@ -28,6 +28,14 @@ teaching Microsoft Foundry through the Cascadia Outfitters case study. See
   This means labs can't be tested in one combined `pytest labs/` run —
   it collides on those package names. Use `./run_all_tests.sh` to run
   every lab's suite one at a time instead.
+- Every `tests/test_*.py` imports `from solution.X import ...`, never
+  `starter.X` — that's what lets `run_all_tests.sh` and CI prove the
+  reference solution is correct at 100% coverage regardless of anyone's
+  in-progress edits. An attendee checks their own `starter/` work with
+  the same test file by setting `LAB_TARGET=starter` (see the root
+  `conftest.py`), which every lab's README uses in its "run the tests"
+  step. Plain `pytest tests/` with no env var always exercises
+  `solution/`.
 - Infrastructure-heavy labs (Durable Functions checkpoints, log/trace
   triage, private networking) additionally document smoke assertions in
   their README — state checks that prove the lab worked, since coverage
