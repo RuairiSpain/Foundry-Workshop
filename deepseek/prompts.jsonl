@@ -1,0 +1,10 @@
+{"prompt_id": "P01", "prompt": "Classify this support request into exactly one category: Billing, Security, Networking, Data, or AI. Return only the category name.\n\nRequest: Our private endpoint resolves inside the virtual network, but connections from on-premises time out."}
+{"prompt_id": "P02", "prompt": "Extract the customer name, region, and severity from this text as JSON.\n\nCustomer: Contoso Retail. Region: West Europe. Severity: High."}
+{"prompt_id": "P03", "prompt": "Summarize the following in exactly two sentences.\n\nA company is comparing three language models hosted in Microsoft Foundry, measuring latency, token usage, and cost across identical prompts."}
+{"prompt_id": "P04", "prompt": "Rewrite this message so it is professional and concise.\n\nwe ran it a few times and it seemed ok but not sure the numbers are clean"}
+{"prompt_id": "P05", "prompt": "Answer in one sentence: if a request uses 800 prompt tokens and 200 completion tokens, how many tokens were processed in total?"}
+{"prompt_id": "P06", "prompt": "Write a Python function that returns the average of a list of numbers. Include a type hint and handle an empty list."}
+{"prompt_id": "P07", "prompt": "Return valid JSON only with fields model, latency_ms, and success. Use model \"test-model\", latency_ms 842.5, success true."}
+{"prompt_id": "P08", "prompt": "In two sentences, explain why average latency and P95 latency can tell different stories about the same benchmark."}
+{"prompt_id": "P09", "prompt": "List three good practices for running a fair latency benchmark across different models. One sentence each."}
+{"prompt_id": "P10", "prompt": "Read this report and give one risk and one recommended next step.\n\nThe benchmark ran 500 requests across three deployments. One deployment showed intermittent throttling under load."}

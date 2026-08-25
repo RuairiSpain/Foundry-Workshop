@@ -1,20 +1,2 @@
-# Verified installed and importable together at these exact versions
-# before this project was written — see src/client_factory.py and
-# src/azure_monitor.py's module docstrings for the real API shapes
-# each was checked against.
 azure-ai-inference==1.0.0b9
 azure-identity==1.25.3
-openai==2.54.0
-PyYAML==6.0.1
-
-# Azure Monitor. NOTE: azure-monitor-query 2.0.0 (today's real latest)
-# dropped MetricsQueryClient — this project uses azure-mgmt-monitor's
-# ARM-based MonitorManagementClient instead. See src/azure_monitor.py's
-# module docstring for why.
-azure-mgmt-monitor==7.0.0
-azure-monitor-opentelemetry==1.8.9
-opentelemetry-api==1.43.0
-opentelemetry-sdk==1.43.0
-
-pytest==9.1.1
-pytest-cov==7.1.0
