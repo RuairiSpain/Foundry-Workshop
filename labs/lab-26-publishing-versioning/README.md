@@ -31,7 +31,9 @@ Open `starter/publishing.py`. Implement four functions:
 3. `canary_traffic_split()` — build a split dict giving the stable
    version `100 - canary_percent` and the canary version
    `canary_percent`, and call `set_traffic_split()`.
-4. `rollback_to_version()` — call `agent_applications_client.rollback()`.
+4. `rollback_to_version()` — call `agent_applications_client.rollback(app_id, to_version=version)`.
+   The client's keyword is `to_version`, not `version` — don't assume it
+   matches this function's own parameter name.
 
 Run the tests to check your work:
 

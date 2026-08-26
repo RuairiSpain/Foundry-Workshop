@@ -31,8 +31,9 @@ def suggest_gear_for_trail(trail_name: str) -> str:
 
 def build_agent_loop(client) -> Agent:
     """Layer 1: the agent loop — one agent, one reasoning/act cycle per call."""
-    # TODO(lab-21): return an Agent built from client, with a name,
-    # instructions, and tools=[suggest_gear_for_trail].
+    # TODO(lab-21): return an Agent built from client, with the same
+    # name as Lab 12 ("cascadia-trip-planner"), instructions, and
+    # tools=[suggest_gear_for_trail].
     raise NotImplementedError("build_agent_loop is not implemented yet")
 
 
@@ -45,9 +46,10 @@ def build_workflow(client):
 
 def build_harness_agent(client) -> Agent:
     """Layer 3: a harness agent, with file access and approval gating built in."""
-    # TODO(lab-21): return create_harness_agent(client, ...) with a name,
-    # agent_instructions, tools=[suggest_gear_for_trail], and
-    # disable_web_search=True (this client doesn't support web search).
+    # TODO(lab-21): return create_harness_agent(client, ...) with
+    # name="cascadia-trip-planner-harness", agent_instructions,
+    # tools=[suggest_gear_for_trail], and disable_web_search=True (this
+    # client doesn't support web search).
     raise NotImplementedError("build_harness_agent is not implemented yet")
 
 
